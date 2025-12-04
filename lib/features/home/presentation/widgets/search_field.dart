@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../../filter/presentation/pages/filter_page.dart';
 
 class SearchField extends StatelessWidget {
-  const SearchField({super.key});
+  final VoidCallback? onFilterPressed;
+
+  const SearchField({
+    super.key,
+    this.onFilterPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +26,14 @@ class SearchField extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           hintText: 'Search your dream car.....',
-          hintStyle: const TextStyle(color: Color(0xFF7F7F7F)), // Text 2
+          hintStyle: const TextStyle(color: Color(0xFF7F7F7F)),
           prefixIcon: const Icon(Icons.search, color: Color(0xFF7F7F7F)),
-          suffixIcon: const Icon(Icons.tune, color: Colors.black), // Filter icon
+          suffixIcon: GestureDetector(
+            onTap: onFilterPressed ?? () {
+              FilterPage.show(context);
+            },
+            child: const Icon(Icons.tune, color: Colors.black),
+          ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 15),
         ),

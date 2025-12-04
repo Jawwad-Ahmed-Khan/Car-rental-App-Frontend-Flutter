@@ -3,6 +3,7 @@ import '../features/auth/pages/phone_login_page.dart';
 import '../features/auth/pages/otp_verification_page.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/main/presentation/pages/main_page.dart';
+import '../features/notification/presentation/pages/notification_page.dart';
 import '../features/onboarding/onboarding_page.dart';
 import '../features/auth/pages/login_page.dart';
 
@@ -16,6 +17,7 @@ class AppRouter {
   static const String register = '/register';
   static const String phoneLogin = '/phone_login';
   static const String otpVerification = '/otp_verification';
+  static const String notifications = '/notifications';
 
   static const String onboarding = '/onboarding';
 
@@ -46,6 +48,10 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const OtpVerificationPage(),
         );
+      case notifications:
+        return MaterialPageRoute(
+          builder: (_) => const NotificationPage(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -57,3 +63,4 @@ class AppRouter {
     }
   }
 }
+
