@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../features/auth/pages/phone_login_page.dart';
 import '../features/auth/pages/otp_verification_page.dart';
+import '../features/home/presentation/pages/home_page.dart';
+import '../features/main/presentation/pages/main_page.dart';
+import '../features/onboarding/onboarding_page.dart';
+import '../features/auth/pages/login_page.dart';
 
 /// Application routing configuration
 /// 
@@ -13,16 +17,22 @@ class AppRouter {
   static const String phoneLogin = '/phone_login';
   static const String otpVerification = '/otp_verification';
 
+  static const String onboarding = '/onboarding';
+
   // Generate routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
         return MaterialPageRoute(
-          builder: (_) => const Placeholder(), // Replace with HomePage
+          builder: (_) => const MainPage(),
+        );
+      case onboarding:
+        return MaterialPageRoute(
+          builder: (_) => const OnboardingPage(),
         );
       case login:
         return MaterialPageRoute(
-          builder: (_) => const Placeholder(), // Replace with LoginPage
+          builder: (_) => const LoginPage(),
         );
       case register:
         return MaterialPageRoute(

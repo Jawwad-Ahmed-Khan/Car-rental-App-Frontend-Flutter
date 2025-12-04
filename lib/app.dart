@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/onboarding/onboarding_page.dart';
+import 'routes/app_router.dart';
 import 'shared/themes/app_theme.dart';
 // Import your routing, and global providers here
 
@@ -13,7 +14,8 @@ class App extends StatelessWidget {
       title: 'Car Rental',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const OnboardingPage(),
+      onGenerateRoute: AppRouter.generateRoute,
+      initialRoute: AppRouter.onboarding,
     );
   }
 }

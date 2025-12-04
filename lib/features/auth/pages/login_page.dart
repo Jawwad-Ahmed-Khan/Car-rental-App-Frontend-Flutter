@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -129,11 +130,38 @@ class _LoginPageState extends State<LoginPage> {
                 // Login button
                 PrimaryButton(
                   text: 'Login',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // TODO: Implement login logic
-                    }
-                  },
+                  isLoading: _isLoading,
+                  onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            // Simulate network delay
+                            await Future.delayed(const Duration(seconds: 2));
+
+                            if (!mounted) return;
+
+                            if (_emailController.text == 'test@gmail.com' &&
+                                _passwordController.text == '1234') {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/',
+                                (route) => false,
+                              );
+                            } else {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Invalid credentials'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        },
                 ),
 
                 const SizedBox(height: 32),
