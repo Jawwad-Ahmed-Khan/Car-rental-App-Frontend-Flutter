@@ -1,3 +1,4 @@
+import 'package:car_rental/features/main/presentation/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../shared/themes/app_colors.dart';
@@ -61,7 +62,9 @@ class _ProfilePageContent extends StatelessWidget {
                 size: 24,
               ),
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => MainPage()),
+            ),
           ),
           title: const Text(
             'Profile',

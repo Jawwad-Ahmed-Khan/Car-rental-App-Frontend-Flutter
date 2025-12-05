@@ -32,6 +32,9 @@ import '../features/search/data/datasources/search_remote_data_source.dart';
 import '../features/search/data/repositories/search_repository_impl.dart';
 import '../features/search/domain/repositories/search_repository.dart';
 import '../features/search/presentation/bloc/search_bloc.dart';
+import '../features/profile/data/datasources/profile_local_data_source.dart';
+import '../features/profile/data/repositories/profile_repository_impl.dart';
+import '../features/profile/domain/repositories/profile_repository.dart';
 
 /// Dependency injection container using GetIt
 final sl = GetIt.instance;
@@ -129,7 +132,9 @@ Future<void> init() async {
 
   // Features - Search
   // Bloc
-  sl.registerFactory(() => SearchBloc(repository: sl()));
+  sl.registerFactory(
+    () => SearchBloc(repository: sl(), profileRepository: sl()),
+  );
 
   // Repository
   sl.registerLazySingleton<SearchRepository>(
@@ -139,6 +144,17 @@ Future<void> init() async {
   // Data sources
   sl.registerLazySingleton<SearchRemoteDataSource>(
     () => SearchRemoteDataSourceImpl(client: sl(), appConfig: sl()),
+  );
+
+  // Features - Profile
+  // Repository
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(localDataSource: sl()),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSource(),
   );
 
   // Core

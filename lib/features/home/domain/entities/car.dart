@@ -26,4 +26,34 @@ class Car {
   final String fuelType;
   final String status;
   final bool isFavorite;
+
+  Car copyWith({
+    int? id,
+    String? brand,
+    String? model,
+    int? year,
+    double? price,
+    String? imageUrl,
+    double? rating,
+    int? seats,
+    String? transmission,
+    String? fuelType,
+    String? status,
+    bool? isFavorite,
+  }) {
+    return Car(
+      id: id ?? this.id,
+      brand: brand ?? this.brand,
+      model: model ?? this.model,
+      year: year ?? this.year,
+      price: price ?? this.price,
+      imageUrl: imageUrl ?? this.imageUrl,
+      rating: rating ?? this.rating,
+      seats: seats ?? this.seats,
+      transmission: transmission ?? this.transmission,
+      fuelType: fuelType ?? this.fuelType,
+      status: status ?? this.status,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 }

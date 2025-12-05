@@ -1,3 +1,5 @@
+import 'package:car_rental/features/home/presentation/pages/home_page.dart';
+import 'package:car_rental/features/main/presentation/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../di/injection_container.dart';
@@ -106,10 +108,17 @@ class _SearchPageContentState extends State<SearchPageContent> {
           // App Bar
           SearchAppBar(
             onBackPressed: () {
+<<<<<<< HEAD
               // Pop the navigation stack if we can, otherwise do nothing (tab page)
               if (Navigator.of(context).canPop()) {
                 Navigator.of(context).pop();
               }
+=======
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const MainPage()),
+              );
+              // Do nothing since this is a tab page
+>>>>>>> bbb644e2f131cab58abacd27a4f099f1d97fff1e
             },
           ),
           const SizedBox(height: 15),
@@ -254,7 +263,9 @@ class _SearchPageContentState extends State<SearchPageContent> {
                           car: car,
                           transmission: car.transmission,
                           onFavoritePressed: () {
-                            // TODO: Toggle favorite
+                            context.read<SearchBloc>().add(
+                              ToggleFavorite(car.id.toString()),
+                            );
                           },
                           onBookPressed: () {
                             // TODO: Navigate to booking
@@ -296,7 +307,9 @@ class _SearchPageContentState extends State<SearchPageContent> {
                           car: car,
                           transmission: car.transmission,
                           onFavoritePressed: () {
-                            // TODO: Toggle favorite
+                            context.read<SearchBloc>().add(
+                              ToggleFavorite(car.id.toString()),
+                            );
                           },
                           onBookPressed: () {
                             // TODO: Navigate to booking
