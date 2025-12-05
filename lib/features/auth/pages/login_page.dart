@@ -3,7 +3,8 @@ import '../../../shared/themes/app_colors.dart';
 import '../../../shared/widgets/app_logo.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../../shared/widgets/password_text_field.dart';
-import '../../../shared/widgets/social_login_button.dart';
+import '../../profile/data/datasources/profile_local_data_source.dart';
+import '../domain/entities/user.dart';
 import 'signup_page.dart';
 import 'reset_password_page.dart';
 
@@ -19,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _profileDataSource = ProfileLocalDataSource();
   bool _rememberMe = false;
   bool _isLoading = false;
 
@@ -144,6 +146,16 @@ class _LoginPageState extends State<LoginPage> {
 
                             if (_emailController.text == 'test@gmail.com' &&
                                 _passwordController.text == '1234') {
+                              // Save user to SharedPreferences
+                              final user = User(
+                                id: '1',
+                                email: _emailController.text,
+                                name: 'Benjamin Jack',
+                                phoneNumber: null,
+                                photoUrl: null,
+                              );
+                              await _profileDataSource.saveUser(user);
+                              
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 '/',
@@ -190,7 +202,6 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 32),
 
-                // Social login buttons
                 // Social login buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

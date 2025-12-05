@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../shared/widgets/custom_bottom_nav_bar.dart';
 import '../../../home/presentation/pages/home_page.dart';
 import '../../../search/presentation/pages/search_page.dart';
+import '../../../chat/presentation/pages/chat_page.dart';
+import '../../../chatbot/presentation/pages/chatbot_page.dart';
+import '../../../profile/presentation/pages/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -16,9 +19,9 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = [
     const HomePage(),
     const SearchPage(),
-    const Center(child: Text('Messages Page')),
-    const Center(child: Text('Notifications Page')),
-    const Center(child: Text('Profile Page')),
+    const ChatPage(),
+    const ChatbotPage(),
+    const ProfilePage(),
   ];
 
   @override

@@ -33,7 +33,7 @@ class CustomBottomNavBar extends StatelessWidget {
           _buildNavItem(0, EvaIcons.home_outline, EvaIcons.home),
           _buildNavItem(1, EvaIcons.search_outline, EvaIcons.search),
           _buildNavItem(2, EvaIcons.message_square_outline, EvaIcons.message_square),
-          _buildNavItem(3, EvaIcons.bell_outline, EvaIcons.bell),
+          _buildNavItem(3, EvaIcons.bulb_outline, EvaIcons.bulb),
           _buildNavItem(4, EvaIcons.person_outline, EvaIcons.person),
         ],
       ),
