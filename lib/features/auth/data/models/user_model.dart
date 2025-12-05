@@ -5,19 +5,23 @@ class UserModel extends User {
   const UserModel({
     required super.id,
     required super.email,
-    required super.name,
-    super.phoneNumber,
+    required super.firstName,
+    required super.lastName,
+    required super.phoneNumber,
     super.photoUrl,
+    super.accessToken,
   });
 
   /// Create UserModel from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      name: json['name'] as String,
-      phoneNumber: json['phone_number'] as String?,
-      photoUrl: json['photo_url'] as String?,
+      id: json['id']?.toString() ?? '',
+      email: json['email'] as String? ?? '',
+      firstName: json['first_name'] as String? ?? '',
+      lastName: json['last_name'] as String? ?? '',
+      phoneNumber: json['contact'] as String? ?? '',
+      photoUrl: json['profilePic'] as String? ?? '',
+      accessToken: json['token'] as String? ?? '',
     );
   }
 
@@ -26,9 +30,11 @@ class UserModel extends User {
     return {
       'id': id,
       'email': email,
-      'name': name,
-      'phone_number': phoneNumber,
-      'photo_url': photoUrl,
+      'first_name': firstName,
+      'last_name': lastName,
+      'contact': phoneNumber,
+      'profilePic': photoUrl,
+      'token': accessToken,
     };
   }
 
@@ -37,9 +43,11 @@ class UserModel extends User {
     return UserModel(
       id: user.id,
       email: user.email,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       phoneNumber: user.phoneNumber,
       photoUrl: user.photoUrl,
+      accessToken: user.accessToken,
     );
   }
 }

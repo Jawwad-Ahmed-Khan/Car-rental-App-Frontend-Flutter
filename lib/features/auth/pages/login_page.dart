@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../presentation/blocs/auth_bloc.dart';
 import '../../../shared/themes/app_colors.dart';
 import '../../../shared/widgets/app_logo.dart';
 import '../../../shared/widgets/primary_button.dart';
@@ -20,7 +22,6 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -63,9 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    hintText: 'Email Address',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Email Address'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -128,40 +127,39 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 24),
 
                 // Login button
-                PrimaryButton(
-                  text: 'Login',
-                  isLoading: _isLoading,
-                  onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              _isLoading = true;
-                            });
-
-                            // Simulate network delay
-                            await Future.delayed(const Duration(seconds: 2));
-
-                            if (!mounted) return;
-
-                            if (_emailController.text == 'test@gmail.com' &&
-                                _passwordController.text == '1234') {
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/',
-                                (route) => false,
-                              );
-                            } else {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Invalid credentials'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        },
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthAuthenticated) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/',
+                        (route) => false,
+                      );
+                    } else if (state is AuthError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return PrimaryButton(
+                      text: 'Login',
+                      isLoading: state is AuthLoading,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<AuthBloc>().add(
+                            LoginEvent(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 32),
@@ -169,9 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Or divider
                 Row(
                   children: [
-                    const Expanded(
-                      child: Divider(color: AppColors.stroke),
-                    ),
+                    const Expanded(child: Divider(color: AppColors.stroke)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
@@ -182,9 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    const Expanded(
-                      child: Divider(color: AppColors.stroke),
-                    ),
+                    const Expanded(child: Divider(color: AppColors.stroke)),
                   ],
                 ),
 
@@ -195,26 +189,17 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildSocialIcon(
-                      'assets/icons/facebook.png',
-                      () {
-                        // TODO: Implement Facebook login
-                      },
-                    ),
+                    _buildSocialIcon('assets/icons/facebook.png', () {
+                      // TODO: Implement Facebook login
+                    }),
                     const SizedBox(width: 20),
-                    _buildSocialIcon(
-                      'assets/icons/google.png',
-                      () {
-                        // TODO: Implement Google login
-                      },
-                    ),
+                    _buildSocialIcon('assets/icons/google.png', () {
+                      // TODO: Implement Google login
+                    }),
                     const SizedBox(width: 20),
-                    _buildSocialIcon(
-                      'assets/icons/apple.png',
-                      () {
-                        // TODO: Implement Apple login
-                      },
-                    ),
+                    _buildSocialIcon('assets/icons/apple.png', () {
+                      // TODO: Implement Apple login
+                    }),
                   ],
                 ),
 

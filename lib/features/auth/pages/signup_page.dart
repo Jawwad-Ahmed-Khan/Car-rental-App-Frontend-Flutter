@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../presentation/blocs/auth_bloc.dart';
 import '../../../shared/themes/app_colors.dart';
 import '../../../shared/widgets/app_logo.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../../shared/widgets/password_text_field.dart';
 import '../../../shared/widgets/social_login_button.dart';
-import 'phone_verification_page.dart';
 
 /// Signup screen - new user registration
 class SignupPage extends StatefulWidget {
@@ -16,14 +17,16 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _phoneController.dispose();
@@ -60,15 +63,27 @@ class _SignupPageState extends State<SignupPage> {
 
                 const SizedBox(height: 40),
 
-                // Full Name field
+                // First Name field
                 TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Full Name',
-                  ),
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(hintText: 'First Name'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your full name';
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                // Last Name field
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(hintText: 'Last Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
                     }
                     return null;
                   },
@@ -80,9 +95,7 @@ class _SignupPageState extends State<SignupPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    hintText: 'Email Address',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Email Address'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -117,9 +130,7 @@ class _SignupPageState extends State<SignupPage> {
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    hintText: 'Phone Number',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Phone Number'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your phone number';
@@ -131,16 +142,41 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 32),
 
                 // Sign Up button
-                PrimaryButton(
-                  text: 'Sign Up',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const PhoneVerificationPage(),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthAuthenticated) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/',
+                        (route) => false,
+                      );
+                    } else if (state is AuthError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
                         ),
                       );
                     }
+                  },
+                  builder: (context, state) {
+                    return PrimaryButton(
+                      text: 'Sign Up',
+                      isLoading: state is AuthLoading,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<AuthBloc>().add(
+                            RegisterEvent(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                              firstName: _firstNameController.text,
+                              lastName: _lastNameController.text,
+                              phoneNumber: _phoneController.text,
+                            ),
+                          );
+                        }
+                      },
+                    );
                   },
                 ),
 
@@ -149,9 +185,7 @@ class _SignupPageState extends State<SignupPage> {
                 // Or divider
                 Row(
                   children: [
-                    const Expanded(
-                      child: Divider(color: AppColors.stroke),
-                    ),
+                    const Expanded(child: Divider(color: AppColors.stroke)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
@@ -162,9 +196,7 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ),
                     ),
-                    const Expanded(
-                      child: Divider(color: AppColors.stroke),
-                    ),
+                    const Expanded(child: Divider(color: AppColors.stroke)),
                   ],
                 ),
 

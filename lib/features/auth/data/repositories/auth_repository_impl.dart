@@ -40,13 +40,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> register(String email, String password, String name) async {
+  Future<Either<Failure, User>> register(
+    String email,
+    String password,
+    String firstName,
+    String lastName,
+    String phoneNumber,
+  ) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection'));
     }
 
     try {
-      final user = await remoteDataSource.register(email, password, name);
+      final user = await remoteDataSource.register(
+        email,
+        password,
+        firstName,
+        lastName,
+        phoneNumber,
+      );
       await localDataSource.cacheUser(user);
       return Right(user);
     } on ServerException catch (e) {

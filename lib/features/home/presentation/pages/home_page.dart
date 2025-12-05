@@ -74,7 +74,20 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(context: context, 
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            title: Text("Warning"),
+                            content: Text('This page is under development. Thank you for your patience.'),
+                            actions:<Widget> [
+                              TextButton(onPressed: (){
+                                Navigator.of(context).pop();
+                              }, child: Text('Close'))
+                            ],
+                          );
+                        });
+                      },
                       child: const Text(
                         'View All',
                         style: TextStyle(
@@ -129,7 +142,22 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(context: context, 
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                          title: Text('Warning'),
+                          content: Text('This page is under development. Sorry for inconvenience.'),
+                          actions: <Widget>[
+                            TextButton(onPressed: (){
+                              Navigator.of(context).pop();
+                            }, 
+                            child: Text('Cancel'))
+                          ],
+                        );
+                        });
+                        
+                      },
                       child: const Text(
                         'View All',
                         style: TextStyle(
