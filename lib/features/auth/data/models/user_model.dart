@@ -17,11 +17,11 @@ class UserModel extends User {
     return UserModel(
       id: json['id']?.toString() ?? '',
       email: json['email'] as String? ?? '',
-      firstName: json['first_name'] as String? ?? '',
-      lastName: json['last_name'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? json['first_name'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? json['last_name'] as String? ?? '',
       phoneNumber: json['contact'] as String? ?? '',
       photoUrl: json['profilePic'] as String? ?? '',
-      accessToken: json['token'] as String? ?? '',
+      accessToken: json['token'] as String? ?? json['access_token'] as String? ?? '',
     );
   }
 

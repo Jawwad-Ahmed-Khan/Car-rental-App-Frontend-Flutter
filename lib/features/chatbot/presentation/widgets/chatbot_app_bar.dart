@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// App bar for the chatbot page
 class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -15,7 +16,7 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: Row(
         children: [
-          // Bot avatar
+          // Logo avatar
           Container(
             width: 40,
             height: 40,
@@ -25,16 +26,12 @@ class ChatbotAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'assets/images/bot_avatar.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
-                    Icons.smart_toy,
-                    color: Colors.black87,
-                    size: 24,
-                  );
-                },
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: SvgPicture.asset(
+                  'assets/images/blacklogo.svg',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),

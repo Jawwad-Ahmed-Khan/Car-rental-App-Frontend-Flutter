@@ -131,13 +131,27 @@ class _LoginPageState extends State<LoginPage> {
                 // Login button
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
+                    print('BlocConsumer Listener received state: $state');
                     if (state is AuthAuthenticated) {
+                      print('AuthAuthenticated! User: ${state.user.email}');
+                      // Save user to SharedPreferences
+                      _profileDataSource.saveUser(state.user);
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Login successful'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      // Navigate to home
+                      print('Navigating to home...');
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         '/',
                         (route) => false,
                       );
                     } else if (state is AuthError) {
+                      print('AuthError: ${state.message}');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
