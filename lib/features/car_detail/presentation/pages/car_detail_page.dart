@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../features/profile/domain/repositories/profile_repository.dart';
 import '../../../../di/injection_container.dart';
 import '../../domain/entities/car_detail.dart';
 import '../../domain/usecases/get_car_details.dart';
@@ -23,6 +24,7 @@ class CarDetailPage extends StatefulWidget {
 
 class _CarDetailPageState extends State<CarDetailPage> {
   late final GetCarDetails _getCarDetails;
+  late final ProfileRepository _profileRepository;
   CarDetail? _carDetail;
   bool _isLoading = true;
   bool _isFavorite = false;
@@ -32,15 +34,18 @@ class _CarDetailPageState extends State<CarDetailPage> {
     super.initState();
     // Use GetIt to retrieve the use case
     _getCarDetails = sl<GetCarDetails>();
+    _profileRepository = sl<ProfileRepository>();
     _loadCarDetails();
   }
 
   Future<void> _loadCarDetails() async {
     try {
       final carDetail = await _getCarDetails(widget.carId);
+      final isFav = await _profileRepository.isFavorite(widget.carId);
+
       setState(() {
         _carDetail = carDetail;
-        _isFavorite = carDetail.isFavorite;
+        _isFavorite = isFav;
         _isLoading = false;
       });
     } catch (e) {
@@ -55,10 +60,28 @@ class _CarDetailPageState extends State<CarDetailPage> {
     }
   }
 
-  void _toggleFavorite() {
+  Future<void> _toggleFavorite() async {
     setState(() {
       _isFavorite = !_isFavorite;
     });
+
+    try {
+      if (_isFavorite) {
+        await _profileRepository.addFavorite(widget.carId);
+      } else {
+        await _profileRepository.removeFavorite(widget.carId);
+      }
+    } catch (e) {
+      // Revert state on error
+      setState(() {
+        _isFavorite = !_isFavorite;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update favorite: $e')),
+        );
+      }
+    }
   }
 
   @override

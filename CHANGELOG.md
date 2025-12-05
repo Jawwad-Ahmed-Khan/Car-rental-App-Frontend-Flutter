@@ -35,6 +35,18 @@ All notable changes to this project will be documented in this file.
         - Pre-filled booking form with logged-in user details (Name, Email, Phone).
         - Made Email field **read-only** to prevent mismatch between booking email and auth token.
 
+### Favorite Cars Feature
+- **User-Specific Favorites**:
+    - Updated `ProfileLocalDataSource` to store favorites with user-specific keys (e.g., `favorite_cars_123`).
+    - Registered `ProfileRepository` in Dependency Injection.
+    - Updated `CarDetailPage` and `SearchPage` to persist and display favorites correctly.
+    - Refactored `FavoritesPage` to use `ProfileRepository`.
+    - Implemented real-time favorite status updates in `SearchBloc`.
+
+### Navigation
+- **Route Fixes**:
+    - Updated Back button behavior in `SearchPage` and `ProfilePage` to correctly navigate back to `MainPage`.
+
 ## [Unreleased] - 2025-12-05
 
 ### Added

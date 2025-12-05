@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../di/injection_container.dart';
+import '../../domain/repositories/profile_repository.dart';
 import '../../../../shared/themes/app_colors.dart';
 import '../../../home/domain/entities/car.dart';
 import '../../../search/data/datasources/search_local_data_source.dart';
-import '../../data/datasources/profile_local_data_source.dart';
+
 import '../../../search/presentation/widgets/search_car_card.dart';
 
 /// Page displaying all favorite cars from SharedPreferences
@@ -14,7 +16,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  final ProfileLocalDataSource _profileDataSource = ProfileLocalDataSource();
+  late final ProfileRepository _profileRepository;
   final SearchLocalDataSourceImpl _searchDataSource =
       SearchLocalDataSourceImpl();
 
@@ -24,6 +26,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
+    _profileRepository = sl<ProfileRepository>();
     _loadFavorites();
   }
 
@@ -31,7 +34,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     setState(() => _isLoading = true);
 
     try {
-      final favoriteIds = await _profileDataSource.getFavoriteCarIds();
+      final favoriteIds = await _profileRepository.getFavoriteCarIds();
       final allCars = await _searchDataSource.getAllCars();
 
       final favorites = allCars
@@ -65,7 +68,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Future<void> _removeFromFavorites(String carId) async {
-    await _profileDataSource.removeFavorite(carId);
+    await _profileRepository.removeFavorite(carId);
     _loadFavorites();
   }
 

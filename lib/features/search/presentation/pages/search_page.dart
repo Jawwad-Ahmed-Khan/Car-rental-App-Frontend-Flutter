@@ -1,3 +1,5 @@
+import 'package:car_rental/features/home/presentation/pages/home_page.dart';
+import 'package:car_rental/features/main/presentation/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../di/injection_container.dart';
@@ -106,6 +108,9 @@ class _SearchPageContentState extends State<SearchPageContent> {
           // App Bar
           SearchAppBar(
             onBackPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const MainPage()),
+              );
               // Do nothing since this is a tab page
             },
           ),
@@ -245,7 +250,9 @@ class _SearchPageContentState extends State<SearchPageContent> {
                           car: car,
                           transmission: car.transmission,
                           onFavoritePressed: () {
-                            // TODO: Toggle favorite
+                            context.read<SearchBloc>().add(
+                              ToggleFavorite(car.id.toString()),
+                            );
                           },
                           onBookPressed: () {
                             // TODO: Navigate to booking
@@ -281,7 +288,9 @@ class _SearchPageContentState extends State<SearchPageContent> {
                           car: car,
                           transmission: car.transmission,
                           onFavoritePressed: () {
-                            // TODO: Toggle favorite
+                            context.read<SearchBloc>().add(
+                              ToggleFavorite(car.id.toString()),
+                            );
                           },
                           onBookPressed: () {
                             // TODO: Navigate to booking

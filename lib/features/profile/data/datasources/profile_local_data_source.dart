@@ -53,40 +53,58 @@ class ProfileLocalDataSource {
     return prefs.getBool(_isLoggedInKey) ?? false;
   }
 
-  /// Get list of favorite car IDs
+  /// Get list of favorite car IDs for current user
   Future<List<String>> getFavoriteCarIds() async {
     final prefs = await SharedPreferences.getInstance();
-    final favorites = prefs.getStringList(_favoritesKey);
+    final user = await getUser();
+    if (user == null) return [];
+
+    final key = '${_favoritesKey}_${user.id}';
+    final favorites = prefs.getStringList(key);
     return favorites ?? [];
   }
 
-  /// Add a car to favorites
+  /// Add a car to favorites for current user
   Future<void> addFavorite(String carId) async {
     final prefs = await SharedPreferences.getInstance();
-    final favorites = prefs.getStringList(_favoritesKey) ?? [];
+    final user = await getUser();
+    if (user == null) return;
+
+    final key = '${_favoritesKey}_${user.id}';
+    final favorites = prefs.getStringList(key) ?? [];
+
     if (!favorites.contains(carId)) {
       favorites.add(carId);
-      await prefs.setStringList(_favoritesKey, favorites);
+      await prefs.setStringList(key, favorites);
     }
   }
 
-  /// Remove a car from favorites
+  /// Remove a car from favorites for current user
   Future<void> removeFavorite(String carId) async {
     final prefs = await SharedPreferences.getInstance();
-    final favorites = prefs.getStringList(_favoritesKey) ?? [];
+    final user = await getUser();
+    if (user == null) return;
+
+    final key = '${_favoritesKey}_${user.id}';
+    final favorites = prefs.getStringList(key) ?? [];
+
     favorites.remove(carId);
-    await prefs.setStringList(_favoritesKey, favorites);
+    await prefs.setStringList(key, favorites);
   }
 
-  /// Check if a car is in favorites
+  /// Check if a car is in favorites for current user
   Future<bool> isFavorite(String carId) async {
     final favorites = await getFavoriteCarIds();
     return favorites.contains(carId);
   }
 
-  /// Clear all favorites
+  /// Clear all favorites for current user
   Future<void> clearFavorites() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_favoritesKey);
+    final user = await getUser();
+    if (user == null) return;
+
+    final key = '${_favoritesKey}_${user.id}';
+    await prefs.remove(key);
   }
 }
