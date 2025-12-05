@@ -11,7 +11,7 @@ abstract class PaymentRepository {
   /// Process payment with selected method
   /// Returns true if payment was successful
   Future<bool> processPayment({
-    required String paymentMethodId,
-    required double amount,
+    required int bookingId,
+    required String paymentMethod,
   });
 }

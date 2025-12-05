@@ -21,7 +21,8 @@ class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
         userName: event.userName,
         pickupDate: event.pickupDate,
         returnDate: event.returnDate,
-        location: event.location,
+        pickupLocation: event.pickupLocation,
+        returnLocation: event.returnLocation,
         carId: event.carId,
         carName: event.carName,
         carDescription: event.carDescription,
@@ -32,6 +33,7 @@ class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
         serviceFee: event.serviceFee,
         paymentMethod: event.paymentMethod,
         paymentMethodIcon: event.paymentMethodIcon,
+        pricePerDay: event.pricePerDay,
       );
 
       emit(ConfirmationLoaded(confirmationData: confirmationData));
@@ -52,7 +54,9 @@ class ConfirmationBloc extends Bloc<ConfirmationEvent, ConfirmationState> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       // Emit success with the confirmation data for navigation
-      emit(ConfirmationSuccess(confirmationData: currentState.confirmationData));
+      emit(
+        ConfirmationSuccess(confirmationData: currentState.confirmationData),
+      );
     }
   }
 }

@@ -36,11 +36,13 @@ class CarCard extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
                   child: SizedBox(
                     height: 120,
                     width: double.infinity,
-                    child: Image.asset(
+                    child: Image.network(
                       car.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
@@ -69,7 +71,7 @@ class CarCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    car.model,
+                    car.brand + ' ' + car.model,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -94,11 +96,12 @@ class CarCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 14, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Chicago, USA', // Dummy location
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      Text(
+                        car.transmission,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -108,11 +111,18 @@ class CarCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.airline_seat_recline_normal, size: 16, color: Colors.grey),
+                          const Icon(
+                            Icons.airline_seat_recline_normal,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${car.seats} Seats',
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),

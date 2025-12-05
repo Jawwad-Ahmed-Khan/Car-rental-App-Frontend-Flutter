@@ -13,7 +13,8 @@ class LoadConfirmationData extends ConfirmationEvent {
   final String userName;
   final DateTime pickupDate;
   final DateTime returnDate;
-  final String location;
+  final String pickupLocation;
+  final String returnLocation;
   final String carId;
   final String carName;
   final String carDescription;
@@ -24,12 +25,14 @@ class LoadConfirmationData extends ConfirmationEvent {
   final double serviceFee;
   final String paymentMethod;
   final String paymentMethodIcon;
+  final double pricePerDay;
 
   const LoadConfirmationData({
     required this.userName,
     required this.pickupDate,
     required this.returnDate,
-    required this.location,
+    required this.pickupLocation,
+    required this.returnLocation,
     required this.carId,
     required this.carName,
     required this.carDescription,
@@ -40,25 +43,28 @@ class LoadConfirmationData extends ConfirmationEvent {
     required this.serviceFee,
     required this.paymentMethod,
     required this.paymentMethodIcon,
+    this.pricePerDay = 0.0,
   });
 
   @override
   List<Object?> get props => [
-        userName,
-        pickupDate,
-        returnDate,
-        location,
-        carId,
-        carName,
-        carDescription,
-        carImageUrl,
-        carRating,
-        reviewCount,
-        amount,
-        serviceFee,
-        paymentMethod,
-        paymentMethodIcon,
-      ];
+    userName,
+    pickupDate,
+    returnDate,
+    pickupLocation,
+    returnLocation,
+    carId,
+    carName,
+    carDescription,
+    carImageUrl,
+    carRating,
+    reviewCount,
+    amount,
+    serviceFee,
+    paymentMethod,
+    paymentMethodIcon,
+    pricePerDay,
+  ];
 }
 
 /// Event to confirm the booking

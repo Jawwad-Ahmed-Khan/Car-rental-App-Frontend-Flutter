@@ -1,12 +1,17 @@
 import '../../domain/entities/payment_method.dart';
 import '../../domain/repositories/payment_repository.dart';
 import '../datasources/payment_local_data_source.dart';
+import '../datasources/payment_remote_data_source.dart';
 
 /// Implementation of PaymentRepository
 class PaymentRepositoryImpl implements PaymentRepository {
   final PaymentLocalDataSource localDataSource;
+  final PaymentRemoteDataSource remoteDataSource;
 
-  PaymentRepositoryImpl({required this.localDataSource});
+  PaymentRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+  });
 
   @override
   Future<List<PaymentMethod>> getPaymentMethods() {
@@ -20,12 +25,12 @@ class PaymentRepositoryImpl implements PaymentRepository {
 
   @override
   Future<bool> processPayment({
-    required String paymentMethodId,
-    required double amount,
+    required int bookingId,
+    required String paymentMethod,
   }) {
-    return localDataSource.processPayment(
-      paymentMethodId: paymentMethodId,
-      amount: amount,
+    return remoteDataSource.processPayment(
+      bookingId: bookingId,
+      paymentMethod: paymentMethod,
     );
   }
 }

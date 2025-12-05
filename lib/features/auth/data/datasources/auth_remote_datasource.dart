@@ -46,36 +46,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonBody = jsonDecode(response.body);
-        print('Parsed JSON Type: ${jsonBody.runtimeType}');
-        print('Parsed JSON Keys: ${jsonBody is Map ? jsonBody.keys.toList() : 'N/A'}');
-        
-        // Check if user data is nested under 'data' or 'user' key
-        Map<String, dynamic> userData;
-        if (jsonBody is Map<String, dynamic>) {
-          if (jsonBody.containsKey('data')) {
-            userData = jsonBody['data'] as Map<String, dynamic>;
-            print('User data found under "data" key');
-          } else if (jsonBody.containsKey('user')) {
-            userData = jsonBody['user'] as Map<String, dynamic>;
-            print('User data found under "user" key');
-          } else {
-            userData = jsonBody;
-            print('Using root JSON as user data');
-          }
-        } else {
-          throw ServerException('Unexpected response format');
-        }
-        
-        print('User Data Keys: ${userData.keys.toList()}');
-        print('User Data: $userData');
-        
-        // Merge access_token from root if available
-        if (jsonBody.containsKey('access_token') && !userData.containsKey('access_token')) {
+
+        // Backend returns user object under 'user' key
+        final userData = jsonBody['user'] as Map<String, dynamic>;
+
+        // Add access_token to user data for model creation
+        if (jsonBody.containsKey('access_token')) {
           userData['access_token'] = jsonBody['access_token'];
         }
-        
+
         final user = UserModel.fromJson(userData);
-        print('Created User: id=${user.id}, email=${user.email}, firstName=${user.firstName}');
+        print(
+          'Created User: id=${user.id}, email=${user.email}, firstName=${user.firstName}',
+        );
         return user;
       } else {
         throw ServerException(

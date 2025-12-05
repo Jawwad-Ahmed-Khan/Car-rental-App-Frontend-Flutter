@@ -19,6 +19,7 @@ class PaymentResult extends Equatable {
   final double serviceFee;
   final double tax;
   final double totalAmount;
+  final double pricePerDay;
 
   const PaymentResult({
     required this.carModel,
@@ -33,6 +34,7 @@ class PaymentResult extends Equatable {
     required this.serviceFee,
     required this.tax,
     required this.totalAmount,
+    this.pricePerDay = 0.0,
   });
 
   /// Create payment result from confirmation data
@@ -46,6 +48,7 @@ class PaymentResult extends Equatable {
     required double amount,
     required double serviceFee,
     required double totalAmount,
+    double pricePerDay = 0.0,
   }) {
     return PaymentResult(
       carModel: carModel,
@@ -55,27 +58,31 @@ class PaymentResult extends Equatable {
       transactionId: transactionId,
       transactionDate: DateTime.now(),
       paymentMethod: paymentMethod,
-      maskedCardNumber: '123 *** *** ***225',
+      maskedCardNumber: paymentMethod.toLowerCase() == 'cash'
+          ? ''
+          : '123 *** *** ***225', // Mock card number for now
       amount: amount,
       serviceFee: serviceFee,
       tax: 0.0,
       totalAmount: totalAmount,
+      pricePerDay: pricePerDay,
     );
   }
 
   @override
   List<Object?> get props => [
-        carModel,
-        pickupDate,
-        returnDate,
-        userName,
-        transactionId,
-        transactionDate,
-        paymentMethod,
-        maskedCardNumber,
-        amount,
-        serviceFee,
-        tax,
-        totalAmount,
-      ];
+    carModel,
+    pickupDate,
+    returnDate,
+    userName,
+    transactionId,
+    transactionDate,
+    paymentMethod,
+    maskedCardNumber,
+    amount,
+    serviceFee,
+    tax,
+    totalAmount,
+    pricePerDay,
+  ];
 }

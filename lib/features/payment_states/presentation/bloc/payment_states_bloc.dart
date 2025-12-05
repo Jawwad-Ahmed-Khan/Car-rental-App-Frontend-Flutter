@@ -25,6 +25,7 @@ class PaymentStatesBloc extends Bloc<PaymentStatesEvent, PaymentStatesState> {
       amount: event.amount,
       serviceFee: event.serviceFee,
       totalAmount: event.totalAmount,
+      pricePerDay: event.pricePerDay,
     );
 
     emit(PaymentStatesLoaded(paymentResult: paymentResult));

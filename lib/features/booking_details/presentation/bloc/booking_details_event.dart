@@ -13,14 +13,18 @@ abstract class BookingDetailsEvent extends Equatable {
 class InitializeBookingDetails extends BookingDetailsEvent {
   final String carId;
   final double price;
+  final String carName;
+  final String carImageUrl;
 
   const InitializeBookingDetails({
     required this.carId,
     required this.price,
+    required this.carName,
+    required this.carImageUrl,
   });
 
   @override
-  List<Object?> get props => [carId, price];
+  List<Object?> get props => [carId, price, carName, carImageUrl];
 }
 
 /// Update full name field
@@ -51,6 +55,36 @@ class UpdateContact extends BookingDetailsEvent {
 
   @override
   List<Object?> get props => [contact];
+}
+
+/// Update CNIC field
+class UpdateCnic extends BookingDetailsEvent {
+  final String cnic;
+
+  const UpdateCnic(this.cnic);
+
+  @override
+  List<Object?> get props => [cnic];
+}
+
+/// Update pickup location field
+class UpdatePickupLocation extends BookingDetailsEvent {
+  final String location;
+
+  const UpdatePickupLocation(this.location);
+
+  @override
+  List<Object?> get props => [location];
+}
+
+/// Update return location field
+class UpdateReturnLocation extends BookingDetailsEvent {
+  final String location;
+
+  const UpdateReturnLocation(this.location);
+
+  @override
+  List<Object?> get props => [location];
 }
 
 /// Select gender

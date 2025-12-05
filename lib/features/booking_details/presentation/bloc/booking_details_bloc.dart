@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/datasources/booking_details_local_data_source.dart';
-import '../../data/repositories/booking_details_repository_impl.dart';
 import '../../domain/usecases/get_initial_booking_details.dart';
-import '../../domain/usecases/submit_booking.dart';
+import '../../../booking/domain/usecases/create_booking.dart';
+import '../../../booking/domain/entities/booking.dart';
+import '../../domain/entities/booking_details.dart';
 import 'booking_details_event.dart';
 import 'booking_details_state.dart';
 
@@ -10,20 +10,14 @@ import 'booking_details_state.dart';
 class BookingDetailsBloc
     extends Bloc<BookingDetailsEvent, BookingDetailsState> {
   final GetInitialBookingDetails _getInitialBookingDetails;
-  final SubmitBooking _submitBooking;
+  final CreateBooking _createBooking;
 
-  BookingDetailsBloc()
-      : _getInitialBookingDetails = GetInitialBookingDetails(
-          BookingDetailsRepositoryImpl(
-            localDataSource: BookingDetailsLocalDataSource(),
-          ),
-        ),
-        _submitBooking = SubmitBooking(
-          BookingDetailsRepositoryImpl(
-            localDataSource: BookingDetailsLocalDataSource(),
-          ),
-        ),
-        super(const BookingDetailsInitial()) {
+  BookingDetailsBloc({
+    required GetInitialBookingDetails getInitialBookingDetails,
+    required CreateBooking createBooking,
+  }) : _getInitialBookingDetails = getInitialBookingDetails,
+       _createBooking = createBooking,
+       super(const BookingDetailsInitial()) {
     on<InitializeBookingDetails>(_onInitialize);
     on<UpdateFullName>(_onUpdateFullName);
     on<UpdateEmail>(_onUpdateEmail);
@@ -33,6 +27,9 @@ class BookingDetailsBloc
     on<SelectPickupDate>(_onSelectPickupDate);
     on<SelectReturnDate>(_onSelectReturnDate);
     on<ToggleBookWithDriver>(_onToggleBookWithDriver);
+    on<UpdateCnic>(_onUpdateCnic);
+    on<UpdatePickupLocation>(_onUpdatePickupLocation);
+    on<UpdateReturnLocation>(_onUpdateReturnLocation);
     on<SubmitBookingEvent>(_onSubmitBooking);
   }
 
@@ -41,8 +38,12 @@ class BookingDetailsBloc
     Emitter<BookingDetailsState> emit,
   ) async {
     try {
-      final booking =
-          await _getInitialBookingDetails(event.carId, event.price);
+      final booking = await _getInitialBookingDetails(
+        event.carId,
+        event.price,
+        event.carName,
+        event.carImageUrl,
+      );
       emit(BookingDetailsLoaded(bookingDetails: booking));
     } catch (e) {
       emit(BookingDetailsError(e.toString()));
@@ -55,23 +56,26 @@ class BookingDetailsBloc
   ) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      emit(currentState.copyWith(
-        bookingDetails:
-            currentState.bookingDetails.copyWith(fullName: event.fullName),
-      ));
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            fullName: event.fullName,
+          ),
+        ),
+      );
     }
   }
 
-  void _onUpdateEmail(
-    UpdateEmail event,
-    Emitter<BookingDetailsState> emit,
-  ) {
+  void _onUpdateEmail(UpdateEmail event, Emitter<BookingDetailsState> emit) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      emit(currentState.copyWith(
-        bookingDetails:
-            currentState.bookingDetails.copyWith(email: event.email),
-      ));
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            email: event.email,
+          ),
+        ),
+      );
     }
   }
 
@@ -81,23 +85,26 @@ class BookingDetailsBloc
   ) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      emit(currentState.copyWith(
-        bookingDetails:
-            currentState.bookingDetails.copyWith(contact: event.contact),
-      ));
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            contact: event.contact,
+          ),
+        ),
+      );
     }
   }
 
-  void _onSelectGender(
-    SelectGender event,
-    Emitter<BookingDetailsState> emit,
-  ) {
+  void _onSelectGender(SelectGender event, Emitter<BookingDetailsState> emit) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      emit(currentState.copyWith(
-        bookingDetails:
-            currentState.bookingDetails.copyWith(gender: event.gender),
-      ));
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            gender: event.gender,
+          ),
+        ),
+      );
     }
   }
 
@@ -107,10 +114,13 @@ class BookingDetailsBloc
   ) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      emit(currentState.copyWith(
-        bookingDetails:
-            currentState.bookingDetails.copyWith(rentalType: event.rentalType),
-      ));
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            rentalType: event.rentalType,
+          ),
+        ),
+      );
     }
   }
 
@@ -120,14 +130,18 @@ class BookingDetailsBloc
   ) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      final updatedBooking = currentState.bookingDetails.copyWith(pickupDate: event.date);
-      
+      final updatedBooking = currentState.bookingDetails.copyWith(
+        pickupDate: event.date,
+      );
+
       // Recalculate price
       final newPrice = updatedBooking.pricePerDay * updatedBooking.rentalDays;
-      
-      emit(currentState.copyWith(
-        bookingDetails: updatedBooking.copyWith(totalPrice: newPrice),
-      ));
+
+      emit(
+        currentState.copyWith(
+          bookingDetails: updatedBooking.copyWith(totalPrice: newPrice),
+        ),
+      );
     }
   }
 
@@ -137,14 +151,18 @@ class BookingDetailsBloc
   ) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      final updatedBooking = currentState.bookingDetails.copyWith(returnDate: event.date);
-      
+      final updatedBooking = currentState.bookingDetails.copyWith(
+        returnDate: event.date,
+      );
+
       // Recalculate price
       final newPrice = updatedBooking.pricePerDay * updatedBooking.rentalDays;
-      
-      emit(currentState.copyWith(
-        bookingDetails: updatedBooking.copyWith(totalPrice: newPrice),
-      ));
+
+      emit(
+        currentState.copyWith(
+          bookingDetails: updatedBooking.copyWith(totalPrice: newPrice),
+        ),
+      );
     }
   }
 
@@ -154,11 +172,58 @@ class BookingDetailsBloc
   ) {
     if (state is BookingDetailsLoaded) {
       final currentState = state as BookingDetailsLoaded;
-      emit(currentState.copyWith(
-        bookingDetails: currentState.bookingDetails.copyWith(
-          bookWithDriver: !currentState.bookingDetails.bookWithDriver,
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            bookWithDriver: !currentState.bookingDetails.bookWithDriver,
+          ),
         ),
-      ));
+      );
+    }
+  }
+
+  void _onUpdateCnic(UpdateCnic event, Emitter<BookingDetailsState> emit) {
+    if (state is BookingDetailsLoaded) {
+      final currentState = state as BookingDetailsLoaded;
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            cnic: event.cnic,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _onUpdatePickupLocation(
+    UpdatePickupLocation event,
+    Emitter<BookingDetailsState> emit,
+  ) {
+    if (state is BookingDetailsLoaded) {
+      final currentState = state as BookingDetailsLoaded;
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            pickupLocation: event.location,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _onUpdateReturnLocation(
+    UpdateReturnLocation event,
+    Emitter<BookingDetailsState> emit,
+  ) {
+    if (state is BookingDetailsLoaded) {
+      final currentState = state as BookingDetailsLoaded;
+      emit(
+        currentState.copyWith(
+          bookingDetails: currentState.bookingDetails.copyWith(
+            returnLocation: event.location,
+          ),
+        ),
+      );
     }
   }
 
@@ -178,13 +243,42 @@ class BookingDetailsBloc
       emit(const BookingDetailsSubmitting());
 
       try {
-        final success = await _submitBooking(currentState.bookingDetails);
-        if (success) {
-          emit(const BookingDetailsSuccess());
-        } else {
-          emit(const BookingDetailsError('Failed to submit booking'));
-          emit(currentState);
-        }
+        final booking = Booking(
+          vehicleId: int.tryParse(currentState.bookingDetails.carId) ?? 0,
+          name: currentState.bookingDetails.fullName,
+          email: currentState.bookingDetails.email,
+          phone: currentState.bookingDetails.contact,
+          cnic: currentState.bookingDetails.cnic,
+          pickupDate:
+              currentState.bookingDetails.pickupDate?.toIso8601String() ?? '',
+          returnDate:
+              currentState.bookingDetails.returnDate?.toIso8601String() ?? '',
+          pickupLocation: currentState.bookingDetails.pickupLocation,
+          returnLocation: currentState.bookingDetails.returnLocation,
+          serviceType: currentState.bookingDetails.bookWithDriver
+              ? 'with_driver'
+              : 'self_drive',
+          priceModel: currentState.bookingDetails.rentalType == RentalType.day
+              ? 'per_day'
+              : 'per_hr',
+        );
+
+        final result = await _createBooking(booking);
+
+        result.fold(
+          (failure) {
+            emit(BookingDetailsError(failure.message));
+            emit(currentState);
+          },
+          (createdBooking) {
+            emit(
+              BookingDetailsSuccess(
+                booking: createdBooking,
+                bookingDetails: currentState.bookingDetails,
+              ),
+            );
+          },
+        );
       } catch (e) {
         emit(BookingDetailsError(e.toString()));
         emit(currentState);

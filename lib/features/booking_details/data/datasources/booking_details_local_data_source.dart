@@ -4,7 +4,11 @@ import '../../domain/entities/booking_details.dart';
 class BookingDetailsLocalDataSource {
   /// Get initial booking details with default values
   Future<BookingDetails> getInitialBookingDetails(
-      String carId, double price) async {
+    String carId,
+    double price,
+    String carName,
+    String carImageUrl,
+  ) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 300));
 
@@ -12,16 +16,19 @@ class BookingDetailsLocalDataSource {
     final pickupDate = DateTime(now.year, now.month, now.day + 1);
     final returnDate = DateTime(now.year, now.month, now.day + 3);
     final duration = returnDate.difference(pickupDate).inDays;
-    
+
     return BookingDetails(
       carId: carId,
       pricePerDay: price,
       totalPrice: price * duration,
       pickupDate: pickupDate,
       returnDate: returnDate,
-      location: 'Shore Dr, Chicago 0062 Usa',
+      pickupLocation: 'Shore Dr, Chicago 0062 Usa',
+      returnLocation: 'Shore Dr, Chicago 0062 Usa',
       gender: Gender.male,
       rentalType: RentalType.day,
+      carName: carName,
+      carImageUrl: carImageUrl,
     );
   }
 

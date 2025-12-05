@@ -24,6 +24,16 @@ class AuthAuthenticated extends AuthState {
   List<Object> get props => [user];
 }
 
+/// Registered state (User created but not logged in)
+class AuthRegistered extends AuthState {
+  final User user;
+
+  const AuthRegistered(this.user);
+
+  @override
+  List<Object> get props => [user];
+}
+
 /// Unauthenticated state
 class AuthUnauthenticated extends AuthState {}
 

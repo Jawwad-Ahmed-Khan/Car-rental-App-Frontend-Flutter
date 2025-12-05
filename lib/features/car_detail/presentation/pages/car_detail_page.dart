@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/datasources/car_detail_local_data_source.dart';
-import '../../data/repositories/car_detail_repository_impl.dart';
+import '../../../../di/injection_container.dart';
 import '../../domain/entities/car_detail.dart';
 import '../../domain/usecases/get_car_details.dart';
 import '../widgets/car_detail_app_bar.dart';
@@ -16,10 +15,7 @@ import '../../../../routes/app_router.dart';
 class CarDetailPage extends StatefulWidget {
   final String carId;
 
-  const CarDetailPage({
-    super.key,
-    required this.carId,
-  });
+  const CarDetailPage({super.key, required this.carId});
 
   @override
   State<CarDetailPage> createState() => _CarDetailPageState();
@@ -34,13 +30,8 @@ class _CarDetailPageState extends State<CarDetailPage> {
   @override
   void initState() {
     super.initState();
-    _initializeAndLoad();
-  }
-
-  void _initializeAndLoad() {
-    final dataSource = CarDetailLocalDataSource();
-    final repository = CarDetailRepositoryImpl(localDataSource: dataSource);
-    _getCarDetails = GetCarDetails(repository);
+    // Use GetIt to retrieve the use case
+    _getCarDetails = sl<GetCarDetails>();
     _loadCarDetails();
   }
 
@@ -56,6 +47,11 @@ class _CarDetailPageState extends State<CarDetailPage> {
       setState(() {
         _isLoading = false;
       });
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading details: $e')));
+      }
     }
   }
 
@@ -73,90 +69,96 @@ class _CarDetailPageState extends State<CarDetailPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _carDetail == null
-              ? const Center(child: Text('Car not found'))
-              : Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Image Carousel
-                            CarImageCarousel(
-                              imageUrls: _carDetail!.imageUrls,
-                              isFavorite: _isFavorite,
-                              onFavoritePressed: _toggleFavorite,
-                            ),
-                            const SizedBox(height: 20),
-                            
-                            // Car Info Section
-                            CarInfoSection(
-                              model: _carDetail!.model,
-                              rating: _carDetail!.rating,
-                              reviewCount: _carDetail!.reviewCount,
-                              description: _carDetail!.description,
-                            ),
-                            const SizedBox(height: 20),
-                            
-                            // Divider
-                            const Divider(height: 1, color: Color(0xFFEDEDED)),
-                            const SizedBox(height: 20),
-                            
-                            // Owner Info Section
-                            OwnerInfoSection(
-                              owner: _carDetail!.owner,
-                              onCallPressed: () {
-                                // Handle call
-                              },
-                              onMessagePressed: () {
-                                // Handle message
-                              },
-                            ),
-                            const SizedBox(height: 24),
-                            
-                            // Car Features Grid
-                            CarFeaturesGrid(
-                              features: _carDetail!.features,
-                            ),
-                            const SizedBox(height: 24),
-                            
-                            // Reviews Section
-                            ReviewsSection(
-                              reviews: _carDetail!.reviews,
-                              totalReviewCount: _carDetail!.reviewCount,
-                              onSeeAllPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  AppRouter.reviews,
-                                  arguments: {
-                                    'carId': widget.carId,
-                                    'rating': _carDetail!.rating,
-                                    'reviewCount': _carDetail!.reviewCount,
-                                  },
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                          ],
+          ? const Center(child: Text('Car not found'))
+          : Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Image Carousel
+                        CarImageCarousel(
+                          imageUrls: _carDetail!.imageUrls,
+                          isFavorite: _isFavorite,
+                          onFavoritePressed: _toggleFavorite,
                         ),
-                      ),
-                    ),
-                    
-                    // Book Now Button
-                    BookNowButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRouter.bookingDetails,
-                          arguments: {
-                            'carId': widget.carId,
-                            'price': 1400.0, // Default price, can be dynamic
+                        const SizedBox(height: 20),
+
+                        // Car Info Section
+                        CarInfoSection(
+                          model: _carDetail!.model,
+                          rating: _carDetail!.rating,
+                          reviewCount: _carDetail!.reviewCount,
+                          description: _carDetail!.description,
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Divider
+                        const Divider(height: 1, color: Color(0xFFEDEDED)),
+                        const SizedBox(height: 20),
+
+                        // Owner Info Section
+                        OwnerInfoSection(
+                          owner: _carDetail!.owner,
+                          onCallPressed: () {
+                            // Handle call
                           },
-                        );
-                      },
+                          onMessagePressed: () {
+                            // Handle message
+                          },
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Car Features Grid
+                        if (_carDetail!.features.isNotEmpty) ...[
+                          CarFeaturesGrid(features: _carDetail!.features),
+                          const SizedBox(height: 24),
+                        ],
+
+                        // Reviews Section
+                        if (_carDetail!.reviews.isNotEmpty) ...[
+                          ReviewsSection(
+                            reviews: _carDetail!.reviews,
+                            totalReviewCount: _carDetail!.reviewCount,
+                            onSeeAllPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRouter.reviews,
+                                arguments: {
+                                  'carId': widget.carId,
+                                  'rating': _carDetail!.rating,
+                                  'reviewCount': _carDetail!.reviewCount,
+                                },
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ],
                     ),
-                  ],
+                  ),
                 ),
+
+                // Book Now Button
+                BookNowButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRouter.bookingDetails,
+                      arguments: {
+                        'carId': widget.carId,
+                        'price': _carDetail!.price,
+                        'carName': _carDetail!.model,
+                        'carImageUrl': _carDetail!.imageUrls.isNotEmpty
+                            ? _carDetail!.imageUrls.first
+                            : '',
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
     );
   }
 }

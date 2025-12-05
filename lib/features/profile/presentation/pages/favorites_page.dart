@@ -15,8 +15,9 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   final ProfileLocalDataSource _profileDataSource = ProfileLocalDataSource();
-  final SearchLocalDataSourceImpl _searchDataSource = SearchLocalDataSourceImpl();
-  
+  final SearchLocalDataSourceImpl _searchDataSource =
+      SearchLocalDataSourceImpl();
+
   List<Car> _favoriteCars = [];
   bool _isLoading = true;
 
@@ -32,20 +33,30 @@ class _FavoritesPageState extends State<FavoritesPage> {
     try {
       final favoriteIds = await _profileDataSource.getFavoriteCarIds();
       final allCars = await _searchDataSource.getAllCars();
-      
-      final favorites = allCars.where((car) => favoriteIds.contains(car.id)).toList();
-      
+
+      final favorites = allCars
+          .where((car) => favoriteIds.contains(car.id))
+          .toList();
+
       setState(() {
-        _favoriteCars = favorites.map((carModel) => Car(
-          id: carModel.id,
-          brand: carModel.brand,
-          model: carModel.model,
-          price: carModel.price,
-          imageUrl: carModel.imageUrl,
-          rating: carModel.rating,
-          seats: carModel.seats,
-          isFavorite: true,
-        )).toList();
+        _favoriteCars = favorites
+            .map(
+              (carModel) => Car(
+                id: carModel.id,
+                brand: carModel.brand,
+                model: carModel.model,
+                year: carModel.year,
+                price: carModel.price,
+                imageUrl: carModel.imageUrl,
+                rating: carModel.rating,
+                seats: carModel.seats,
+                transmission: carModel.transmission,
+                fuelType: carModel.fuelType,
+                status: carModel.status,
+                isFavorite: true,
+              ),
+            )
+            .toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -94,8 +105,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _favoriteCars.isEmpty
-              ? _buildEmptyState()
-              : _buildFavoritesList(),
+          ? _buildEmptyState()
+          : _buildFavoritesList(),
     );
   }
 
@@ -104,11 +115,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_border,
-            size: 80,
-            color: AppColors.textSecondary,
-          ),
+          Icon(Icons.favorite_border, size: 80, color: AppColors.textSecondary),
           const SizedBox(height: 16),
           const Text(
             'No favorite cars yet',
@@ -116,14 +123,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Start adding cars to your favorites!',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -146,8 +145,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
           final car = _favoriteCars[index];
           return SearchCarCard(
             car: car,
-            location: 'Chicago, USA',
-            onFavoritePressed: () => _removeFromFavorites(car.id),
+            transmission: car.transmission,
+            onFavoritePressed: () => _removeFromFavorites(car.id.toString()),
           );
         },
       ),

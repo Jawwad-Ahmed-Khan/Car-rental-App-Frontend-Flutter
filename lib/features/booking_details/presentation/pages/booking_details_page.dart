@@ -10,27 +10,42 @@ import '../widgets/booking_text_field.dart';
 import '../widgets/gender_selector.dart';
 import '../widgets/rental_type_selector.dart';
 import '../widgets/rental_date_section.dart';
-import '../widgets/car_location_display.dart';
-import '../widgets/pay_now_button.dart';
 import '../../../booking/presentation/pages/date_time_picker_dialog.dart';
+import '../../../booking/domain/usecases/create_booking.dart';
+import '../../domain/usecases/get_initial_booking_details.dart';
+import '../../../../di/injection_container.dart';
 import '../../../../routes/app_router.dart';
 
 /// Main Booking Details page
 class BookingDetailsPage extends StatelessWidget {
   final String carId;
   final double price;
+  final String carName;
+  final String carImageUrl;
 
   const BookingDetailsPage({
     super.key,
     required this.carId,
     required this.price,
+    required this.carName,
+    required this.carImageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BookingDetailsBloc()
-        ..add(InitializeBookingDetails(carId: carId, price: price)),
+      create: (context) =>
+          BookingDetailsBloc(
+            getInitialBookingDetails: sl<GetInitialBookingDetails>(),
+            createBooking: sl<CreateBooking>(),
+          )..add(
+            InitializeBookingDetails(
+              carId: carId,
+              price: price,
+              carName: carName,
+              carImageUrl: carImageUrl,
+            ),
+          ),
       child: const _BookingDetailsContent(),
     );
   }
@@ -50,13 +65,24 @@ class _BookingDetailsContent extends StatelessWidget {
               backgroundColor: Color(0xFF21292B),
             ),
           );
-          Navigator.of(context).pop();
+
+          // Navigate to Payment Methods page with booking object
+          Navigator.pushNamed(
+            context,
+            AppRouter.paymentMethods,
+            arguments: {
+              'booking': state.booking,
+              'totalAmount': state.bookingDetails.totalPrice,
+              'carName': state.bookingDetails.carName,
+              'carImageUrl': state.bookingDetails.carImageUrl,
+              'pickupDate': state.bookingDetails.pickupDate,
+              'returnDate': state.bookingDetails.returnDate,
+              'pricePerDay': state.bookingDetails.pricePerDay,
+            },
+          );
         } else if (state is BookingDetailsError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
@@ -91,7 +117,7 @@ class _BookingDetailsContent extends StatelessWidget {
             children: [
               // Progress Stepper
               BookingProgressStepper(currentStep: state.currentStep),
-              
+
               // Scrollable Content
               Expanded(
                 child: SingleChildScrollView(
@@ -103,9 +129,9 @@ class _BookingDetailsContent extends StatelessWidget {
                       BookWithDriverToggle(
                         isEnabled: booking.bookWithDriver,
                         onToggle: () {
-                          context
-                              .read<BookingDetailsBloc>()
-                              .add(const ToggleBookWithDriver());
+                          context.read<BookingDetailsBloc>().add(
+                            const ToggleBookWithDriver(),
+                          );
                         },
                       ),
                       const SizedBox(height: 20),
@@ -116,9 +142,9 @@ class _BookingDetailsContent extends StatelessWidget {
                         icon: Icons.person_outline,
                         value: booking.fullName,
                         onChanged: (value) {
-                          context
-                              .read<BookingDetailsBloc>()
-                              .add(UpdateFullName(value));
+                          context.read<BookingDetailsBloc>().add(
+                            UpdateFullName(value),
+                          );
                         },
                       ),
                       const SizedBox(height: 16),
@@ -129,11 +155,12 @@ class _BookingDetailsContent extends StatelessWidget {
                         icon: Icons.email_outlined,
                         value: booking.email,
                         onChanged: (value) {
-                          context
-                              .read<BookingDetailsBloc>()
-                              .add(UpdateEmail(value));
+                          context.read<BookingDetailsBloc>().add(
+                            UpdateEmail(value),
+                          );
                         },
                         keyboardType: TextInputType.emailAddress,
+                        readOnly: true,
                       ),
                       const SizedBox(height: 16),
 
@@ -143,11 +170,25 @@ class _BookingDetailsContent extends StatelessWidget {
                         icon: Icons.phone_outlined,
                         value: booking.contact,
                         onChanged: (value) {
-                          context
-                              .read<BookingDetailsBloc>()
-                              .add(UpdateContact(value));
+                          context.read<BookingDetailsBloc>().add(
+                            UpdateContact(value),
+                          );
                         },
                         keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // CNIC Field
+                      BookingTextField(
+                        hint: 'CNIC (e.g. 12345-1234567-1)',
+                        icon: Icons.badge_outlined,
+                        value: booking.cnic,
+                        onChanged: (value) {
+                          context.read<BookingDetailsBloc>().add(
+                            UpdateCnic(value),
+                          );
+                        },
+                        keyboardType: TextInputType.number,
                       ),
                       const SizedBox(height: 24),
 
@@ -155,9 +196,9 @@ class _BookingDetailsContent extends StatelessWidget {
                       GenderSelector(
                         selectedGender: booking.gender,
                         onGenderSelected: (gender) {
-                          context
-                              .read<BookingDetailsBloc>()
-                              .add(SelectGender(gender));
+                          context.read<BookingDetailsBloc>().add(
+                            SelectGender(gender),
+                          );
                         },
                       ),
                       const SizedBox(height: 24),
@@ -166,9 +207,9 @@ class _BookingDetailsContent extends StatelessWidget {
                       RentalTypeSelector(
                         selectedType: booking.rentalType,
                         onTypeSelected: (type) {
-                          context
-                              .read<BookingDetailsBloc>()
-                              .add(SelectRentalType(type));
+                          context.read<BookingDetailsBloc>().add(
+                            SelectRentalType(type),
+                          );
                         },
                       ),
                       const SizedBox(height: 20),
@@ -178,74 +219,105 @@ class _BookingDetailsContent extends StatelessWidget {
                         pickupDate: booking.pickupDate,
                         returnDate: booking.returnDate,
                         onPickupDateTap: () async {
-                          final result =
-                              await DateTimePickerDialog.show(context);
+                          final result = await DateTimePickerDialog.show(
+                            context,
+                            initialStartDate: booking.pickupDate,
+                            initialEndDate: booking.returnDate,
+                          );
                           if (result != null && context.mounted) {
                             context.read<BookingDetailsBloc>().add(
-                                  SelectPickupDate(
-                                      result.startDate ?? result.startTime),
-                                );
+                              SelectPickupDate(
+                                result.startDate ?? result.startTime,
+                              ),
+                            );
                           }
                         },
                         onReturnDateTap: () async {
-                          final result =
-                              await DateTimePickerDialog.show(context);
+                          final result = await DateTimePickerDialog.show(
+                            context,
+                            initialStartDate: booking.pickupDate,
+                            initialEndDate: booking.returnDate,
+                            isSelectingEndDate: true,
+                          );
                           if (result != null && context.mounted) {
                             context.read<BookingDetailsBloc>().add(
-                                  SelectReturnDate(
-                                      result.endDate ?? result.endTime),
-                                );
+                              SelectReturnDate(
+                                result.endDate ?? result.endTime,
+                              ),
+                            );
                           }
                         },
                       ),
                       const SizedBox(height: 24),
 
-                      // Car Location Display
-                      CarLocationDisplay(location: booking.location),
+                      // Pickup Location Field
+                      BookingTextField(
+                        hint: 'Pickup Location',
+                        icon: Icons.location_on_outlined,
+                        value: booking.pickupLocation,
+                        onChanged: (value) {
+                          context.read<BookingDetailsBloc>().add(
+                            UpdatePickupLocation(value),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Return Location Field
+                      BookingTextField(
+                        hint: 'Return Location',
+                        icon: Icons.location_on_outlined,
+                        value: booking.returnLocation,
+                        onChanged: (value) {
+                          context.read<BookingDetailsBloc>().add(
+                            UpdateReturnLocation(value),
+                          );
+                        },
+                      ),
                       const SizedBox(height: 20),
                     ],
                   ),
                 ),
               ),
 
-              // Pay Now Button
-              PayNowButton(
-                totalPrice: booking.totalPrice,
-                onPressed: () {
-                  if (!booking.isValid) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please fill all required fields (Name, Email, Contact)'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
-                  
-                  // Navigate to Payment Methods page with all booking details
-                  Navigator.pushNamed(
-                    context,
-                    AppRouter.paymentMethods,
-                    arguments: {
-                      'totalAmount': booking.totalPrice,
-                      'userName': booking.fullName.isNotEmpty 
-                          ? booking.fullName 
-                          : 'Benjamin Jack',
-                      'pickupDate': booking.pickupDate ?? DateTime.now(),
-                      'returnDate': booking.returnDate ?? DateTime.now().add(const Duration(days: 3)),
-                      'location': booking.location.isNotEmpty 
-                          ? booking.location 
-                          : 'Shore Dr, Chicago 0062 Usa',
-                      'carId': booking.carId,
-                      // Car details - using defaults matching Figma design
-                      'carName': 'Tesla Model S',
-                      'carDescription': 'A car with high specs that are rented at an affordable price.',
-                      'carImageUrl': 'assets/images/Tesla_car_2.png',
-                      'carRating': 5.0,
-                      'reviewCount': 100,
+              // Continue Button
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (!booking.isValid) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please fill all required fields'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      context.read<BookingDetailsBloc>().add(
+                        const SubmitBookingEvent(),
+                      );
                     },
-                  );
-                },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF21292B),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Continue',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

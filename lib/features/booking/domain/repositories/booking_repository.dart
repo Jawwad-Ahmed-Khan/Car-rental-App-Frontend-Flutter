@@ -1,10 +1,10 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/errors/failures.dart';
+import '../entities/booking.dart';
 import '../entities/booking_time.dart';
 
-/// Repository interface for booking operations
 abstract class BookingRepository {
-  /// Validate the booking time selection
+  Future<Either<Failure, Booking>> createBooking(Booking booking);
   Future<bool> validateBookingTime(BookingTime bookingTime);
-  
-  /// Save booking time selection
   Future<void> saveBookingTime(BookingTime bookingTime);
 }

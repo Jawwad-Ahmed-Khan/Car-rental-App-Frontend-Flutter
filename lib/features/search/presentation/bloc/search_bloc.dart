@@ -1,8 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../filter/domain/entities/filter_criteria.dart';
 import '../../../home/domain/entities/car.dart';
-import '../../data/datasources/search_local_data_source.dart';
-import '../../data/repositories/search_repository_impl.dart';
 import '../../domain/repositories/search_repository.dart';
 import 'search_event.dart';
 import 'search_state.dart';
@@ -10,12 +8,7 @@ import 'search_state.dart';
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SearchRepository repository;
 
-  SearchBloc({SearchRepository? repository})
-      : repository = repository ??
-            SearchRepositoryImpl(
-              localDataSource: SearchLocalDataSourceImpl(),
-            ),
-        super(const SearchInitial()) {
+  SearchBloc({required this.repository}) : super(const SearchInitial()) {
     on<LoadSearchData>(_onLoadSearchData);
     on<SearchQueryChanged>(_onSearchQueryChanged);
     on<BrandFilterChanged>(_onBrandFilterChanged);
@@ -32,14 +25,16 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       final popular = await repository.getPopularCars();
       final allCars = await repository.getCarsByBrand(null);
 
-      emit(SearchLoaded(
-        recommendedCars: recommended,
-        popularCars: popular,
-        filteredCars: allCars,
-        selectedBrand: null,
-        searchQuery: '',
-        activeFilterCriteria: null,
-      ));
+      emit(
+        SearchLoaded(
+          recommendedCars: recommended,
+          popularCars: popular,
+          filteredCars: allCars,
+          selectedBrand: null,
+          searchQuery: '',
+          activeFilterCriteria: null,
+        ),
+      );
     } catch (e) {
       emit(SearchError(e.toString()));
     }
@@ -53,11 +48,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       final currentState = state as SearchLoaded;
       try {
         final cars = await repository.searchCars(event.query);
-        emit(currentState.copyWith(
-          filteredCars: cars,
-          searchQuery: event.query,
-          clearFilter: true,
-        ));
+        emit(
+          currentState.copyWith(
+            filteredCars: cars,
+            searchQuery: event.query,
+            clearFilter: true,
+          ),
+        );
       } catch (e) {
         emit(SearchError(e.toString()));
       }
@@ -72,14 +69,16 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       final currentState = state as SearchLoaded;
       try {
         final cars = await repository.getCarsByBrand(event.brand);
-        emit(SearchLoaded(
-          recommendedCars: currentState.recommendedCars,
-          popularCars: currentState.popularCars,
-          filteredCars: cars,
-          selectedBrand: event.brand,
-          searchQuery: '',
-          activeFilterCriteria: null,
-        ));
+        emit(
+          SearchLoaded(
+            recommendedCars: currentState.recommendedCars,
+            popularCars: currentState.popularCars,
+            filteredCars: cars,
+            selectedBrand: event.brand,
+            searchQuery: '',
+            activeFilterCriteria: null,
+          ),
+        );
       } catch (e) {
         emit(SearchError(e.toString()));
       }
@@ -96,23 +95,22 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         // If no criteria or clearing filters, show all cars
         if (event.criteria == null || !event.criteria!.hasActiveFilters) {
           final allCars = await repository.getCarsByBrand(null);
-          emit(currentState.copyWith(
-            filteredCars: allCars,
-            clearFilter: true,
-          ));
+          emit(currentState.copyWith(filteredCars: allCars, clearFilter: true));
           return;
         }
 
         // Get all cars first
         final allCars = await repository.getCarsByBrand(null);
-        
+
         // Apply filters
         final filteredCars = _applyFilters(allCars, event.criteria!);
-        
-        emit(currentState.copyWith(
-          filteredCars: filteredCars,
-          activeFilterCriteria: event.criteria,
-        ));
+
+        emit(
+          currentState.copyWith(
+            filteredCars: filteredCars,
+            activeFilterCriteria: event.criteria,
+          ),
+        );
       } catch (e) {
         emit(SearchError(e.toString()));
       }
@@ -140,7 +138,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       }
 
       // Filter by seating capacity
-      if (criteria.seatingCapacity != null && car.seats != criteria.seatingCapacity) {
+      if (criteria.seatingCapacity != null &&
+          car.seats != criteria.seatingCapacity) {
         return false;
       }
 
@@ -148,4 +147,3 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }).toList();
   }
 }
-

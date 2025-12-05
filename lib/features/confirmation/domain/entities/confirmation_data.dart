@@ -7,7 +7,8 @@ class ConfirmationData extends Equatable {
   final String userName;
   final DateTime pickupDate;
   final DateTime returnDate;
-  final String location;
+  final String pickupLocation;
+  final String returnLocation;
 
   // Car Information
   final String carId;
@@ -24,13 +25,15 @@ class ConfirmationData extends Equatable {
   final double totalAmount;
   final String paymentMethod;
   final String paymentMethodIcon;
+  final double pricePerDay;
 
   const ConfirmationData({
     required this.bookingId,
     required this.userName,
     required this.pickupDate,
     required this.returnDate,
-    required this.location,
+    required this.pickupLocation,
+    required this.returnLocation,
     required this.carId,
     required this.carName,
     required this.carDescription,
@@ -43,6 +46,7 @@ class ConfirmationData extends Equatable {
     required this.totalAmount,
     required this.paymentMethod,
     required this.paymentMethodIcon,
+    this.pricePerDay = 0.0,
   });
 
   /// Create confirmation data from booking and payment information
@@ -50,7 +54,8 @@ class ConfirmationData extends Equatable {
     required String userName,
     required DateTime pickupDate,
     required DateTime returnDate,
-    required String location,
+    required String pickupLocation,
+    required String returnLocation,
     required String carId,
     required String carName,
     required String carDescription,
@@ -61,6 +66,7 @@ class ConfirmationData extends Equatable {
     required double serviceFee,
     required String paymentMethod,
     required String paymentMethodIcon,
+    double pricePerDay = 0.0,
   }) {
     // Generate booking ID
     final bookingId = _generateBookingId();
@@ -72,7 +78,8 @@ class ConfirmationData extends Equatable {
       userName: userName,
       pickupDate: pickupDate,
       returnDate: returnDate,
-      location: location,
+      pickupLocation: pickupLocation,
+      returnLocation: returnLocation,
       carId: carId,
       carName: carName,
       carDescription: carDescription,
@@ -85,6 +92,7 @@ class ConfirmationData extends Equatable {
       totalAmount: amount + serviceFee,
       paymentMethod: paymentMethod,
       paymentMethodIcon: paymentMethodIcon,
+      pricePerDay: pricePerDay,
     );
   }
 
@@ -100,22 +108,24 @@ class ConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-        bookingId,
-        userName,
-        pickupDate,
-        returnDate,
-        location,
-        carId,
-        carName,
-        carDescription,
-        carImageUrl,
-        carRating,
-        reviewCount,
-        transactionId,
-        amount,
-        serviceFee,
-        totalAmount,
-        paymentMethod,
-        paymentMethodIcon,
-      ];
+    bookingId,
+    userName,
+    pickupDate,
+    returnDate,
+    pickupLocation,
+    returnLocation,
+    carId,
+    carName,
+    carDescription,
+    carImageUrl,
+    carRating,
+    reviewCount,
+    transactionId,
+    amount,
+    serviceFee,
+    totalAmount,
+    paymentMethod,
+    paymentMethodIcon,
+    pricePerDay,
+  ];
 }

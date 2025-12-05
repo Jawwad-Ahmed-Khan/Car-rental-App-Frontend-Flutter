@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/errors/failures.dart';
 import '../entities/car.dart';
 import '../repositories/home_repository.dart';
 
@@ -6,7 +8,7 @@ class GetCars {
 
   GetCars(this.repository);
 
-  Future<List<Car>> call() async {
+  Future<Either<Failure, List<Car>>> call() async {
     return await repository.getCars();
   }
 }

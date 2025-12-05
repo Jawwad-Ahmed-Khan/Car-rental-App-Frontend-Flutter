@@ -21,6 +21,7 @@ class PaymentStatesPage extends StatelessWidget {
   final double amount;
   final double serviceFee;
   final double totalAmount;
+  final double pricePerDay;
 
   const PaymentStatesPage({
     super.key,
@@ -33,23 +34,27 @@ class PaymentStatesPage extends StatelessWidget {
     required this.amount,
     required this.serviceFee,
     required this.totalAmount,
+    this.pricePerDay = 0.0,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => PaymentStatesBloc()
-        ..add(LoadPaymentResult(
-          carModel: carName,
-          pickupDate: pickupDate,
-          returnDate: returnDate,
-          userName: userName,
-          transactionId: transactionId,
-          paymentMethod: paymentMethod,
-          amount: amount,
-          serviceFee: serviceFee,
-          totalAmount: totalAmount,
-        )),
+        ..add(
+          LoadPaymentResult(
+            carModel: carName,
+            pickupDate: pickupDate,
+            returnDate: returnDate,
+            userName: userName,
+            transactionId: transactionId,
+            paymentMethod: paymentMethod,
+            amount: amount,
+            serviceFee: serviceFee,
+            totalAmount: totalAmount,
+            pricePerDay: pricePerDay,
+          ),
+        ),
       child: const _PaymentStatesContent(),
     );
   }
@@ -90,10 +95,7 @@ class _PaymentStatesContent extends StatelessWidget {
           body: Column(
             children: [
               // Divider
-              Container(
-                height: 1,
-                color: const Color(0xFFD7D7D7),
-              ),
+              Container(height: 1, color: const Color(0xFFD7D7D7)),
               // Scrollable content
               Expanded(
                 child: SingleChildScrollView(
@@ -129,6 +131,16 @@ class _PaymentStatesContent extends StatelessWidget {
                           serviceFee: paymentResult.serviceFee,
                           tax: paymentResult.tax,
                           totalAmount: paymentResult.totalAmount,
+                          pricePerDay: paymentResult.pricePerDay,
+                          rentDays:
+                              paymentResult.returnDate
+                                      .difference(paymentResult.pickupDate)
+                                      .inDays ==
+                                  0
+                              ? 1
+                              : paymentResult.returnDate
+                                    .difference(paymentResult.pickupDate)
+                                    .inDays,
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -140,20 +152,22 @@ class _PaymentStatesContent extends StatelessWidget {
                           isDownloading: isDownloading,
                           isSharing: isSharing,
                           onDownload: () {
-                            context
-                                .read<PaymentStatesBloc>()
-                                .add(const DownloadReceipt());
+                            context.read<PaymentStatesBloc>().add(
+                              const DownloadReceipt(),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Receipt downloaded successfully!'),
+                                content: Text(
+                                  'Receipt downloaded successfully!',
+                                ),
                                 backgroundColor: Color(0xFF2ECC71),
                               ),
                             );
                           },
                           onShare: () {
-                            context
-                                .read<PaymentStatesBloc>()
-                                .add(const ShareReceipt());
+                            context.read<PaymentStatesBloc>().add(
+                              const ShareReceipt(),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Receipt ready to share!'),
@@ -171,7 +185,9 @@ class _PaymentStatesContent extends StatelessWidget {
                         child: BackToHomeButton(
                           onPressed: () {
                             // Navigate back to home and clear the stack
-                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(
+                              context,
+                            ).popUntil((route) => route.isFirst);
                           },
                         ),
                       ),

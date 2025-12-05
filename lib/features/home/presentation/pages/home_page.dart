@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/datasources/home_local_data_source.dart';
-import '../../data/repositories/home_repository_impl.dart';
+import '../../../../di/injection_container.dart';
 import '../../domain/usecases/get_cars.dart';
 import '../widgets/home_app_bar.dart';
 import '../widgets/search_field.dart';
@@ -24,18 +23,30 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    final dataSource = HomeLocalDataSourceImpl();
-    final repository = HomeRepositoryImpl(localDataSource: dataSource);
-    _getCars = GetCars(repository);
+    // Use GetIt to retrieve the use case
+    _getCars = sl<GetCars>();
     _loadCars();
   }
 
   Future<void> _loadCars() async {
-    final cars = await _getCars();
-    setState(() {
-      _cars = cars;
-      _isLoading = false;
-    });
+    final result = await _getCars();
+    result.fold(
+      (failure) {
+        // Handle error (e.g., show snackbar)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(failure.message)));
+        setState(() {
+          _isLoading = false;
+        });
+      },
+      (cars) {
+        setState(() {
+          _cars = cars;
+          _isLoading = false;
+        });
+      },
+    );
   }
 
   @override
@@ -77,10 +88,14 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         // Navigate to search page (index 1 in bottom navigation)
                         // Find the MainPage's state and change the index
-                        final mainPageState = context.findAncestorStateOfType<State>();
+                        final mainPageState = context
+                            .findAncestorStateOfType<State>();
                         if (mainPageState != null && mainPageState.mounted) {
                           // Use a callback to switch to search tab
-                          Navigator.of(context).pushNamed('/search', arguments: {'showAllCars': true});
+                          Navigator.of(context).pushNamed(
+                            '/search',
+                            arguments: {'showAllCars': true},
+                          );
                         }
                       },
                       child: const Text(
@@ -100,10 +115,7 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Text(
                   'Available',
-                  style: TextStyle(
-                    color: Color(0xFF7F7F7F),
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Color(0xFF7F7F7F), fontSize: 12),
                 ),
               ),
               const SizedBox(height: 15),
@@ -162,12 +174,14 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   image: const DecorationImage(
-                    image: AssetImage('assets/images/car_banner.png'), // Placeholder for banner
+                    image: AssetImage(
+                      'assets/images/car_banner.png',
+                    ), // Placeholder for banner
                     fit: BoxFit.cover,
                   ),
                 ),
                 child: Container(
-                   decoration: BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
                       begin: Alignment.bottomCenter,
@@ -180,7 +194,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 100), // Bottom padding for floating nav bar
+              const SizedBox(
+                height: 100,
+              ), // Bottom padding for floating nav bar
             ],
           ),
         ),

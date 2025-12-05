@@ -19,6 +19,7 @@ class LoadPaymentResult extends PaymentStatesEvent {
   final double amount;
   final double serviceFee;
   final double totalAmount;
+  final double pricePerDay;
 
   const LoadPaymentResult({
     required this.carModel,
@@ -30,20 +31,22 @@ class LoadPaymentResult extends PaymentStatesEvent {
     required this.amount,
     required this.serviceFee,
     required this.totalAmount,
+    this.pricePerDay = 0.0,
   });
 
   @override
   List<Object?> get props => [
-        carModel,
-        pickupDate,
-        returnDate,
-        userName,
-        transactionId,
-        paymentMethod,
-        amount,
-        serviceFee,
-        totalAmount,
-      ];
+    carModel,
+    pickupDate,
+    returnDate,
+    userName,
+    transactionId,
+    paymentMethod,
+    amount,
+    serviceFee,
+    totalAmount,
+    pricePerDay,
+  ];
 }
 
 /// Event to download receipt

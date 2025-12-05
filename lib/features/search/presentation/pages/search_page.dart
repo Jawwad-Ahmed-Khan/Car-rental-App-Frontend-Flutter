@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../di/injection_container.dart';
 import '../../../filter/presentation/pages/filter_page.dart';
 import '../bloc/search_bloc.dart';
 import '../bloc/search_event.dart';
@@ -16,7 +17,7 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SearchBloc()..add(const LoadSearchData()),
+      create: (context) => sl<SearchBloc>()..add(const LoadSearchData()),
       child: const SearchPageContent(),
     );
   }
@@ -110,10 +111,7 @@ class _SearchPageContentState extends State<SearchPageContent> {
           ),
           const SizedBox(height: 15),
           // Divider
-          const Divider(
-            color: Color(0xFFD7D7D7),
-            height: 1,
-          ),
+          const Divider(color: Color(0xFFD7D7D7), height: 1),
           const SizedBox(height: 20),
           // Search Input with filter button
           SearchInput(
@@ -129,18 +127,17 @@ class _SearchPageContentState extends State<SearchPageContent> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF21292B),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.filter_alt,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+                    const Icon(Icons.filter_alt, color: Colors.white, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -155,7 +152,10 @@ class _SearchPageContentState extends State<SearchPageContent> {
                     GestureDetector(
                       onTap: _clearFilters,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
@@ -186,7 +186,9 @@ class _SearchPageContentState extends State<SearchPageContent> {
           const SizedBox(height: 25),
           // Recommend For You Section (shows filtered cars)
           CarSection(
-            title: state.isFilterActive ? 'Filtered Results' : 'Recommend For You',
+            title: state.isFilterActive
+                ? 'Filtered Results'
+                : 'Recommend For You',
             onViewAllPressed: () {
               // TODO: Navigate to all recommended cars
             },
@@ -227,12 +229,13 @@ class _SearchPageContentState extends State<SearchPageContent> {
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.72,
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.72,
+                            crossAxisSpacing: 15,
+                            mainAxisSpacing: 15,
+                          ),
                       itemCount: state.filteredCars.length > 4
                           ? 4
                           : state.filteredCars.length,
@@ -240,7 +243,7 @@ class _SearchPageContentState extends State<SearchPageContent> {
                         final car = state.filteredCars[index];
                         return SearchCarCard(
                           car: car,
-                          location: _getLocation(index),
+                          transmission: car.transmission,
                           onFavoritePressed: () {
                             // TODO: Toggle favorite
                           },
@@ -276,7 +279,7 @@ class _SearchPageContentState extends State<SearchPageContent> {
                         width: 160,
                         child: SearchCarCard(
                           car: car,
-                          location: _getLocation(index + 4),
+                          transmission: car.transmission,
                           onFavoritePressed: () {
                             // TODO: Toggle favorite
                           },
@@ -296,4 +299,3 @@ class _SearchPageContentState extends State<SearchPageContent> {
     );
   }
 }
-

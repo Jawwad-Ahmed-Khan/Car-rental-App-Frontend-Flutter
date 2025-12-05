@@ -9,7 +9,22 @@ abstract class CalendarEvent extends Equatable {
 
 /// Initialize the calendar with default values
 class InitializeCalendar extends CalendarEvent {
-  const InitializeCalendar();
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
+  final bool isSelectingEndDate;
+
+  const InitializeCalendar({
+    this.initialStartDate,
+    this.initialEndDate,
+    this.isSelectingEndDate = false,
+  });
+
+  @override
+  List<Object?> get props => [
+    initialStartDate,
+    initialEndDate,
+    isSelectingEndDate,
+  ];
 }
 
 /// Update start time

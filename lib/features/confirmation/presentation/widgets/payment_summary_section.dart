@@ -8,6 +8,8 @@ class PaymentSummarySection extends StatelessWidget {
   final double totalAmount;
   final String paymentMethod;
   final String paymentMethodIcon;
+  final double pricePerDay;
+  final int rentDays;
 
   const PaymentSummarySection({
     super.key,
@@ -17,6 +19,8 @@ class PaymentSummarySection extends StatelessWidget {
     required this.totalAmount,
     required this.paymentMethod,
     required this.paymentMethodIcon,
+    this.pricePerDay = 0.0,
+    this.rentDays = 1,
   });
 
   @override
@@ -35,17 +39,19 @@ class PaymentSummarySection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         // Transaction ID
+        _buildRow(label: 'Trx ID', value: transactionId, isBold: true),
+        const SizedBox(height: 12),
+        // Base Fare
         _buildRow(
-          label: 'Trx ID',
-          value: transactionId,
-          isBold: true,
+          label: 'Base Fare',
+          value: '\$${pricePerDay.toStringAsFixed(0)}',
         ),
         const SizedBox(height: 12),
-        // Amount
-        _buildRow(
-          label: 'Amount',
-          value: '\$${amount.toStringAsFixed(0)}',
-        ),
+        // Rent Days
+        _buildRow(label: 'Rent Days', value: '$rentDays Days'),
+        const SizedBox(height: 12),
+        // Amount (Total Rental Price)
+        _buildRow(label: 'Amount', value: '\$${amount.toStringAsFixed(0)}'),
         const SizedBox(height: 12),
         // Service fee
         _buildRow(
@@ -54,10 +60,7 @@ class PaymentSummarySection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         // Divider
-        Container(
-          height: 1,
-          color: const Color(0xFFD7D7D7),
-        ),
+        Container(height: 1, color: const Color(0xFFD7D7D7)),
         const SizedBox(height: 16),
         // Total amount
         _buildRow(

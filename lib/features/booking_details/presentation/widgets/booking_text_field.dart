@@ -8,6 +8,7 @@ class BookingTextField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final TextInputType keyboardType;
   final bool isRequired;
+  final bool readOnly;
 
   const BookingTextField({
     super.key,
@@ -17,13 +18,14 @@ class BookingTextField extends StatelessWidget {
     required this.onChanged,
     this.keyboardType = TextInputType.text,
     this.isRequired = true,
+    this.readOnly = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: readOnly ? const Color(0xFFF5F5F5) : Colors.white,
         border: Border.all(color: const Color(0xFFD7D7D7)),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -34,6 +36,7 @@ class BookingTextField extends StatelessWidget {
           ),
         onChanged: onChanged,
         keyboardType: keyboardType,
+        readOnly: readOnly,
         style: const TextStyle(
           fontFamily: 'Roboto',
           fontSize: 14,
@@ -48,11 +51,7 @@ class BookingTextField extends StatelessWidget {
             fontWeight: FontWeight.w400,
             color: Color(0xFF5A5A5A),
           ),
-          prefixIcon: Icon(
-            icon,
-            color: const Color(0xFF767676),
-            size: 20,
-          ),
+          prefixIcon: Icon(icon, color: const Color(0xFF767676), size: 20),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,

@@ -30,5 +30,10 @@ class SelectPaymentMethod extends PaymentEvent {
 
 /// Event to confirm and process payment
 class ConfirmPayment extends PaymentEvent {
-  const ConfirmPayment();
+  final int bookingId;
+
+  const ConfirmPayment({required this.bookingId});
+
+  @override
+  List<Object?> get props => [bookingId];
 }

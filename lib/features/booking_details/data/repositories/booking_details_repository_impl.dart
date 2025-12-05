@@ -10,8 +10,17 @@ class BookingDetailsRepositoryImpl implements BookingDetailsRepository {
 
   @override
   Future<BookingDetails> getInitialBookingDetails(
-      String carId, double price) async {
-    return localDataSource.getInitialBookingDetails(carId, price);
+    String carId,
+    double price,
+    String carName,
+    String carImageUrl,
+  ) async {
+    return localDataSource.getInitialBookingDetails(
+      carId,
+      price,
+      carName,
+      carImageUrl,
+    );
   }
 
   @override

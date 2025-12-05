@@ -51,7 +51,25 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<String?> getToken() async {
-    return sharedPreferences.getString(cachedTokenKey);
+    final token = sharedPreferences.getString(cachedTokenKey);
+    if (token != null) return token;
+
+    // Fallback: Try to get token from cached user
+    final userJson = sharedPreferences.getString(cachedUserKey);
+    if (userJson != null) {
+      try {
+        final Map<String, dynamic> json = jsonDecode(userJson);
+        final userToken = json['token'] ?? json['access_token'];
+        if (userToken != null && userToken is String && userToken.isNotEmpty) {
+          // Cache it for next time
+          await cacheToken(userToken);
+          return userToken;
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+    return null;
   }
 
   @override

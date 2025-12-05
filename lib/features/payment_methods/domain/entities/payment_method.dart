@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 /// Enum for payment method types
 enum PaymentMethodType {
+  cash,
   card,
   applePay,
   googlePay,
@@ -66,5 +67,11 @@ class SavedCard extends Equatable {
   String get maskedCardNumber => '**** **** **** $cardNumber';
 
   @override
-  List<Object?> get props => [id, cardNumber, cardHolderName, expiryDate, cardType];
+  List<Object?> get props => [
+    id,
+    cardNumber,
+    cardHolderName,
+    expiryDate,
+    cardType,
+  ];
 }

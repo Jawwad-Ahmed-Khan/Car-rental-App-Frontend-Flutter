@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/booking_details.dart';
+import '../../../booking/domain/entities/booking.dart';
 
 /// Base state for booking details
 abstract class BookingDetailsState extends Equatable {
@@ -45,7 +46,16 @@ class BookingDetailsSubmitting extends BookingDetailsState {
 
 /// Success state after submission
 class BookingDetailsSuccess extends BookingDetailsState {
-  const BookingDetailsSuccess();
+  final Booking booking;
+  final BookingDetails bookingDetails;
+
+  const BookingDetailsSuccess({
+    required this.booking,
+    required this.bookingDetails,
+  });
+
+  @override
+  List<Object?> get props => [booking, bookingDetails];
 }
 
 /// Error state

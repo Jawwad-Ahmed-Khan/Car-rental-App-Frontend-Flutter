@@ -29,6 +29,9 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await remoteDataSource.login(email, password);
       await localDataSource.cacheUser(user);
+      if (user.accessToken != null) {
+        await localDataSource.cacheToken(user.accessToken!);
+      }
       return Right(user);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -60,6 +63,9 @@ class AuthRepositoryImpl implements AuthRepository {
         phoneNumber,
       );
       await localDataSource.cacheUser(user);
+      if (user.accessToken != null) {
+        await localDataSource.cacheToken(user.accessToken!);
+      }
       return Right(user);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

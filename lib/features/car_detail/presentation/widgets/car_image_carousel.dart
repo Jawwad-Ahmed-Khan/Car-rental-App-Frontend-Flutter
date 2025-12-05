@@ -53,20 +53,27 @@ class _CarImageCarouselState extends State<CarImageCarousel> {
             },
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Image.asset(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: Image.network(
                   widget.imageUrls[index],
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return const Center(
-                      child: Icon(Icons.directions_car, size: 80, color: Colors.grey),
+                      child: Icon(
+                        Icons.directions_car,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
                     );
                   },
                 ),
               );
             },
           ),
-          
+
           // Favorite button
           Positioned(
             top: 16,
@@ -94,7 +101,7 @@ class _CarImageCarouselState extends State<CarImageCarousel> {
               ),
             ),
           ),
-          
+
           // Page indicators
           Positioned(
             bottom: 16,

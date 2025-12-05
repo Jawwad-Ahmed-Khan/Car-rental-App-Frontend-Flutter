@@ -17,7 +17,8 @@ class ConfirmationPage extends StatelessWidget {
   final String userName;
   final DateTime pickupDate;
   final DateTime returnDate;
-  final String location;
+  final String pickupLocation;
+  final String returnLocation;
 
   // Car details
   final String carId;
@@ -32,13 +33,15 @@ class ConfirmationPage extends StatelessWidget {
   final double serviceFee;
   final String paymentMethod;
   final String paymentMethodIcon;
+  final double pricePerDay;
 
   const ConfirmationPage({
     super.key,
     required this.userName,
     required this.pickupDate,
     required this.returnDate,
-    required this.location,
+    required this.pickupLocation,
+    required this.returnLocation,
     required this.carId,
     required this.carName,
     required this.carDescription,
@@ -49,28 +52,33 @@ class ConfirmationPage extends StatelessWidget {
     required this.serviceFee,
     required this.paymentMethod,
     required this.paymentMethodIcon,
+    this.pricePerDay = 0.0,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ConfirmationBloc()
-        ..add(LoadConfirmationData(
-          userName: userName,
-          pickupDate: pickupDate,
-          returnDate: returnDate,
-          location: location,
-          carId: carId,
-          carName: carName,
-          carDescription: carDescription,
-          carImageUrl: carImageUrl,
-          carRating: carRating,
-          reviewCount: reviewCount,
-          amount: amount,
-          serviceFee: serviceFee,
-          paymentMethod: paymentMethod,
-          paymentMethodIcon: paymentMethodIcon,
-        )),
+        ..add(
+          LoadConfirmationData(
+            userName: userName,
+            pickupDate: pickupDate,
+            returnDate: returnDate,
+            pickupLocation: pickupLocation,
+            returnLocation: returnLocation,
+            carId: carId,
+            carName: carName,
+            carDescription: carDescription,
+            carImageUrl: carImageUrl,
+            carRating: carRating,
+            reviewCount: reviewCount,
+            amount: amount,
+            serviceFee: serviceFee,
+            paymentMethod: paymentMethod,
+            paymentMethodIcon: paymentMethodIcon,
+            pricePerDay: pricePerDay,
+          ),
+        ),
       child: const _ConfirmationContent(),
     );
   }
@@ -102,10 +110,7 @@ class _ConfirmationContent extends StatelessWidget {
           );
         } else if (state is ConfirmationError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
@@ -125,9 +130,7 @@ class _ConfirmationContent extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(
-                    color: Color(0xFF21292B),
-                  ),
+                  CircularProgressIndicator(color: Color(0xFF21292B)),
                   SizedBox(height: 16),
                   Text(
                     'Processing confirmation...',
@@ -159,10 +162,7 @@ class _ConfirmationContent extends StatelessWidget {
           body: Column(
             children: [
               // Divider
-              Container(
-                height: 1,
-                color: const Color(0xFFD7D7D7),
-              ),
+              Container(height: 1, color: const Color(0xFFD7D7D7)),
               // Scrollable content
               Expanded(
                 child: SingleChildScrollView(
@@ -193,7 +193,8 @@ class _ConfirmationContent extends StatelessWidget {
                           userName: data.userName,
                           pickupDate: data.pickupDate,
                           returnDate: data.returnDate,
-                          location: data.location,
+                          pickupLocation: data.pickupLocation,
+                          returnLocation: data.returnLocation,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -216,6 +217,16 @@ class _ConfirmationContent extends StatelessWidget {
                           totalAmount: data.totalAmount,
                           paymentMethod: data.paymentMethod,
                           paymentMethodIcon: data.paymentMethodIcon,
+                          pricePerDay: data.pricePerDay,
+                          rentDays:
+                              data.returnDate
+                                      .difference(data.pickupDate)
+                                      .inDays ==
+                                  0
+                              ? 1
+                              : data.returnDate
+                                    .difference(data.pickupDate)
+                                    .inDays,
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -225,9 +236,9 @@ class _ConfirmationContent extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: ConfirmButton(
                           onPressed: () {
-                            context
-                                .read<ConfirmationBloc>()
-                                .add(const ConfirmBooking());
+                            context.read<ConfirmationBloc>().add(
+                              const ConfirmBooking(),
+                            );
                           },
                         ),
                       ),

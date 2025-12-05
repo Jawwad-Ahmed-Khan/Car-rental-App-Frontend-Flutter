@@ -11,6 +11,8 @@ class TransactionDetailSection extends StatelessWidget {
   final double serviceFee;
   final double tax;
   final double totalAmount;
+  final double pricePerDay;
+  final int rentDays;
 
   const TransactionDetailSection({
     super.key,
@@ -22,11 +24,13 @@ class TransactionDetailSection extends StatelessWidget {
     required this.serviceFee,
     required this.tax,
     required this.totalAmount,
+    this.pricePerDay = 0.0,
+    this.rentDays = 1,
   });
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('ddMMMyyy');
+    final dateFormat = DateFormat('dd MMM yyyy');
     final timeFormat = DateFormat('hh:mm a');
 
     return Column(
@@ -43,16 +47,13 @@ class TransactionDetailSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         // Transaction ID
-        _buildRow(
-          label: 'Transaction ID',
-          value: transactionId,
-          isBold: true,
-        ),
+        _buildRow(label: 'Transaction ID', value: transactionId, isBold: true),
         const SizedBox(height: 12),
         // Transaction Date
         _buildRow(
           label: 'Transaction Date',
-          value: '${dateFormat.format(transactionDate)} - ${timeFormat.format(transactionDate).toLowerCase()}',
+          value:
+              '${dateFormat.format(transactionDate)} - ${timeFormat.format(transactionDate).toLowerCase()}',
         ),
         const SizedBox(height: 12),
         // Payment Method
@@ -68,36 +69,50 @@ class TransactionDetailSection extends StatelessWidget {
                 color: Color(0xFF7F7F7F),
               ),
             ),
-            Row(
-              children: [
-                // Mastercard icon
-                _buildPaymentIcon(),
-                const SizedBox(width: 8),
-                Text(
-                  maskedCardNumber,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    color: Color(0xFF000000),
-                  ),
+            if (maskedCardNumber.isEmpty)
+              Text(
+                paymentMethod,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: Color(0xFF000000),
                 ),
-              ],
-            ),
+              )
+            else
+              Row(
+                children: [
+                  // Mastercard icon
+                  _buildPaymentIcon(),
+                  const SizedBox(width: 8),
+                  Text(
+                    maskedCardNumber,
+                    style: const TextStyle(
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Color(0xFF000000),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
         const SizedBox(height: 20),
         // Divider
-        Container(
-          height: 1,
-          color: const Color(0xFFD7D7D7),
-        ),
+        Container(height: 1, color: const Color(0xFFD7D7D7)),
         const SizedBox(height: 16),
-        // Amount
+        // Base Fare
         _buildRow(
-          label: 'Amount',
-          value: '\$${amount.toStringAsFixed(0)}',
+          label: 'Base Fare',
+          value: '\$${pricePerDay.toStringAsFixed(0)}',
         ),
+        const SizedBox(height: 12),
+        // Rent Days
+        _buildRow(label: 'Rent Days', value: '$rentDays Days'),
+        const SizedBox(height: 12),
+        // Amount
+        _buildRow(label: 'Amount', value: '\$${amount.toStringAsFixed(0)}'),
         const SizedBox(height: 12),
         // Service fee
         _buildRow(
@@ -106,16 +121,10 @@ class TransactionDetailSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         // Tax
-        _buildRow(
-          label: 'Tax',
-          value: '\$${tax.toStringAsFixed(0)}',
-        ),
+        _buildRow(label: 'Tax', value: '\$${tax.toStringAsFixed(0)}'),
         const SizedBox(height: 16),
         // Divider
-        Container(
-          height: 1,
-          color: const Color(0xFFD7D7D7),
-        ),
+        Container(height: 1, color: const Color(0xFFD7D7D7)),
         const SizedBox(height: 16),
         // Total amount
         _buildRow(

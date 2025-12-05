@@ -35,11 +35,11 @@ class PaymentLoaded extends PaymentState {
 
   @override
   List<Object?> get props => [
-        paymentMethods,
-        savedCard,
-        selectedPaymentMethodId,
-        totalAmount,
-      ];
+    paymentMethods,
+    savedCard,
+    selectedPaymentMethodId,
+    totalAmount,
+  ];
 
   PaymentLoaded copyWith({
     List<PaymentMethod>? paymentMethods,
@@ -64,7 +64,18 @@ class PaymentProcessing extends PaymentState {
 
 /// Payment success state
 class PaymentSuccess extends PaymentState {
-  const PaymentSuccess();
+  final int bookingId;
+  final String paymentMethod;
+  final double amount;
+
+  const PaymentSuccess({
+    required this.bookingId,
+    required this.paymentMethod,
+    required this.amount,
+  });
+
+  @override
+  List<Object?> get props => [bookingId, paymentMethod, amount];
 }
 
 /// Payment error state

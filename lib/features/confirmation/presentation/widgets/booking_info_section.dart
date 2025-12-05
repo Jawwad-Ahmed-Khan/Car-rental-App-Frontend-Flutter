@@ -7,7 +7,8 @@ class BookingInfoSection extends StatelessWidget {
   final String userName;
   final DateTime pickupDate;
   final DateTime returnDate;
-  final String location;
+  final String pickupLocation;
+  final String returnLocation;
 
   const BookingInfoSection({
     super.key,
@@ -15,7 +16,8 @@ class BookingInfoSection extends StatelessWidget {
     required this.userName,
     required this.pickupDate,
     required this.returnDate,
-    required this.location,
+    required this.pickupLocation,
+    required this.returnLocation,
   });
 
   @override
@@ -37,33 +39,36 @@ class BookingInfoSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         // Booking ID
-        _buildInfoRow(
-          label: '• Booking ID',
-          value: bookingId,
-        ),
+        _buildInfoRow(label: '• Booking ID', value: bookingId),
         const SizedBox(height: 12),
         // Name
-        _buildInfoRow(
-          label: '• Name',
-          value: userName,
-        ),
+        _buildInfoRow(label: '• Name', value: userName),
         const SizedBox(height: 12),
         // Pick up Date
         _buildInfoRow(
           label: '• Pick up Date',
-          value: '${dateFormat.format(pickupDate)}  ${timeFormat.format(pickupDate).toLowerCase()}',
+          value:
+              '${dateFormat.format(pickupDate)}  ${timeFormat.format(pickupDate).toLowerCase()}',
         ),
         const SizedBox(height: 12),
         // Return Date
         _buildInfoRow(
           label: '• Return Date',
-          value: '${dateFormat.format(returnDate)}  ${timeFormat.format(returnDate).toLowerCase()}',
+          value:
+              '${dateFormat.format(returnDate)}  ${timeFormat.format(returnDate).toLowerCase()}',
         ),
         const SizedBox(height: 12),
-        // Location
+        // Pickup Location
         _buildInfoRow(
-          label: '• Location',
-          value: location,
+          label: '• Pickup Loc',
+          value: pickupLocation,
+          isLocation: true,
+        ),
+        const SizedBox(height: 12),
+        // Return Location
+        _buildInfoRow(
+          label: '• Return Loc',
+          value: returnLocation,
           isLocation: true,
         ),
       ],

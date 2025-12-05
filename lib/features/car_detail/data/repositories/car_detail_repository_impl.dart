@@ -1,15 +1,29 @@
+import '../../../../core/errors/failures.dart';
+import '../../../../core/network/network_info.dart';
 import '../../domain/entities/car_detail.dart';
 import '../../domain/repositories/car_detail_repository.dart';
-import '../datasources/car_detail_local_data_source.dart';
+import '../datasources/car_detail_remote_data_source.dart';
 
-/// Implementation of CarDetailRepository using local data source
 class CarDetailRepositoryImpl implements CarDetailRepository {
-  final CarDetailLocalDataSource localDataSource;
+  final CarDetailRemoteDataSource remoteDataSource;
+  final NetworkInfo networkInfo;
 
-  CarDetailRepositoryImpl({required this.localDataSource});
+  CarDetailRepositoryImpl({
+    required this.remoteDataSource,
+    required this.networkInfo,
+  });
 
   @override
-  Future<CarDetail> getCarDetails(String carId) async {
-    return await localDataSource.getCarDetails(carId);
+  Future<CarDetail> getCarDetails(String id) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final remoteCarDetail = await remoteDataSource.getCarDetails(id);
+        return remoteCarDetail;
+      } catch (e) {
+        throw ServerFailure('Failed to fetch car details');
+      }
+    } else {
+      throw ServerFailure('No internet connection');
+    }
   }
 }

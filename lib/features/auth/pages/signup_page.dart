@@ -144,7 +144,15 @@ class _SignupPageState extends State<SignupPage> {
                 // Sign Up button
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    if (state is AuthAuthenticated) {
+                    if (state is AuthRegistered) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('User Registration Successful'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                      Navigator.pop(context);
+                    } else if (state is AuthAuthenticated) {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         '/',

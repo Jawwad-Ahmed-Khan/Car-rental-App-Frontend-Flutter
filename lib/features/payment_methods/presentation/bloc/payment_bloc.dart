@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../di/injection_container.dart';
+import '../../../auth/data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/payment_local_data_source.dart';
+import '../../data/datasources/payment_remote_data_source.dart';
 import '../../data/repositories/payment_repository_impl.dart';
 import 'payment_event.dart';
 import 'payment_state.dart';
@@ -7,12 +10,16 @@ import 'payment_state.dart';
 /// BLoC for managing payment state
 class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final PaymentRepositoryImpl _repository;
-
   PaymentBloc()
-      : _repository = PaymentRepositoryImpl(
-          localDataSource: PaymentLocalDataSource(),
+    : _repository = PaymentRepositoryImpl(
+        localDataSource: PaymentLocalDataSource(),
+        remoteDataSource: PaymentRemoteDataSourceImpl(
+          client: sl(),
+          appConfig: sl(),
+          authLocalDataSource: sl<AuthLocalDataSource>(),
         ),
-        super(const PaymentInitial()) {
+      ),
+      super(const PaymentInitial()) {
     on<LoadPaymentData>(_onLoadPaymentData);
     on<SelectPaymentMethod>(_onSelectPaymentMethod);
     on<ConfirmPayment>(_onConfirmPayment);
@@ -37,12 +44,14 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         }
       }
 
-      emit(PaymentLoaded(
-        paymentMethods: paymentMethods,
-        savedCard: savedCard,
-        selectedPaymentMethodId: selectedId,
-        totalAmount: event.totalAmount,
-      ));
+      emit(
+        PaymentLoaded(
+          paymentMethods: paymentMethods,
+          savedCard: savedCard,
+          selectedPaymentMethodId: selectedId,
+          totalAmount: event.totalAmount,
+        ),
+      );
     } catch (e) {
       emit(PaymentError('Failed to load payment methods: $e'));
     }
@@ -56,15 +65,15 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     if (currentState is PaymentLoaded) {
       // Update payment methods selection
       final updatedMethods = currentState.paymentMethods.map((method) {
-        return method.copyWith(
-          isSelected: method.id == event.paymentMethodId,
-        );
+        return method.copyWith(isSelected: method.id == event.paymentMethodId);
       }).toList();
 
-      emit(currentState.copyWith(
-        paymentMethods: updatedMethods,
-        selectedPaymentMethodId: event.paymentMethodId,
-      ));
+      emit(
+        currentState.copyWith(
+          paymentMethods: updatedMethods,
+          selectedPaymentMethodId: event.paymentMethodId,
+        ),
+      );
     }
   }
 
@@ -83,18 +92,24 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       emit(const PaymentProcessing());
 
       try {
-        final success = await _repository.processPayment(
-          paymentMethodId: currentState.selectedPaymentMethodId!,
-          amount: currentState.totalAmount,
+        final paymentSuccess = await _repository.processPayment(
+          bookingId: event.bookingId,
+          paymentMethod: currentState.selectedPaymentMethodId!,
         );
 
-        if (success) {
-          emit(const PaymentSuccess());
+        if (paymentSuccess) {
+          emit(
+            PaymentSuccess(
+              bookingId: event.bookingId,
+              paymentMethod: currentState.selectedPaymentMethodId!,
+              amount: currentState.totalAmount,
+            ),
+          );
         } else {
           emit(const PaymentError('Payment failed. Please try again.'));
         }
       } catch (e) {
-        emit(PaymentError('Payment error: $e'));
+        emit(PaymentError('Payment processing failed: $e'));
       }
     }
   }

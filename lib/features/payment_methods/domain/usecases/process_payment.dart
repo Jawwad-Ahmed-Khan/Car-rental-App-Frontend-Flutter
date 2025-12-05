@@ -7,12 +7,12 @@ class ProcessPayment {
   ProcessPayment(this.repository);
 
   Future<bool> call({
-    required String paymentMethodId,
-    required double amount,
+    required int bookingId,
+    required String paymentMethod,
   }) async {
     return repository.processPayment(
-      paymentMethodId: paymentMethodId,
-      amount: amount,
+      bookingId: bookingId,
+      paymentMethod: paymentMethod,
     );
   }
 }

@@ -4,14 +4,14 @@ import '../../../../routes/app_router.dart';
 
 class SearchCarCard extends StatelessWidget {
   final Car car;
-  final String location;
+  final String transmission;
   final VoidCallback? onFavoritePressed;
   final VoidCallback? onBookPressed;
 
   const SearchCarCard({
     super.key,
     required this.car,
-    this.location = 'Chicago, USA',
+    this.transmission = '',
     this.onFavoritePressed,
     this.onBookPressed,
   });
@@ -53,7 +53,7 @@ class SearchCarCard extends StatelessWidget {
                     child: SizedBox(
                       width: double.infinity,
                       height: double.infinity,
-                      child: Image.asset(
+                      child: Image.network(
                         car.imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
@@ -128,26 +128,16 @@ class SearchCarCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 2),
-                        const Icon(
-                          Icons.star,
-                          size: 12,
-                          color: Colors.orange,
-                        ),
+                        const Icon(Icons.star, size: 12, color: Colors.orange),
                       ],
                     ),
                     const SizedBox(height: 2),
                     // Location
                     Row(
                       children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 10,
-                          color: Color(0xFF7F7F7F),
-                        ),
-                        const SizedBox(width: 2),
                         Expanded(
                           child: Text(
-                            location,
+                            car.transmission,
                             style: const TextStyle(
                               fontSize: 10,
                               color: Color(0xFF7F7F7F),
@@ -185,13 +175,15 @@ class SearchCarCard extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: onBookPressed ?? () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRouter.carDetails,
-                              arguments: {'carId': car.id},
-                            );
-                          },
+                          onTap:
+                              onBookPressed ??
+                              () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRouter.carDetails,
+                                  arguments: {'carId': car.id},
+                                );
+                              },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,

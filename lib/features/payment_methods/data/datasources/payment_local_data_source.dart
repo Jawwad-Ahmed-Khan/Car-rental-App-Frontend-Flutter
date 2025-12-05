@@ -9,33 +9,15 @@ class PaymentLocalDataSource {
 
     return const [
       PaymentMethod(
-        id: 'apple_pay',
-        name: 'Apple Pay',
-        type: PaymentMethodType.applePay,
-        isSelected: false,
-      ),
-      PaymentMethod(
-        id: 'google_pay',
-        name: 'Google Pay',
-        type: PaymentMethodType.googlePay,
-        isSelected: false,
-      ),
-      PaymentMethod(
-        id: 'master_card',
-        name: 'Master Card',
-        type: PaymentMethodType.masterCard,
+        id: 'cash',
+        name: 'Cash',
+        type: PaymentMethodType.cash,
         isSelected: true, // Default selected
       ),
       PaymentMethod(
-        id: 'discover',
-        name: 'Discover',
-        type: PaymentMethodType.discover,
-        isSelected: false,
-      ),
-      PaymentMethod(
-        id: 'amex',
-        name: 'AMEX',
-        type: PaymentMethodType.amex,
+        id: 'credit_card',
+        name: 'Credit Card',
+        type: PaymentMethodType.card,
         isSelected: false,
       ),
     ];

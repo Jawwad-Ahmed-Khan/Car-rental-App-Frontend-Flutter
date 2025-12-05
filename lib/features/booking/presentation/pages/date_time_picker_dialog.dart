@@ -11,21 +11,46 @@ import '../widgets/calendar_action_buttons.dart';
 
 /// Main calendar/date-time picker dialog
 class DateTimePickerDialog extends StatelessWidget {
-  const DateTimePickerDialog({super.key});
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
+  final bool isSelectingEndDate;
+
+  const DateTimePickerDialog({
+    super.key,
+    this.initialStartDate,
+    this.initialEndDate,
+    this.isSelectingEndDate = false,
+  });
 
   /// Show the dialog and return the selected BookingTime
-  static Future<BookingTime?> show(BuildContext context) async {
+  static Future<BookingTime?> show(
+    BuildContext context, {
+    DateTime? initialStartDate,
+    DateTime? initialEndDate,
+    bool isSelectingEndDate = false,
+  }) async {
     return showDialog<BookingTime>(
       context: context,
       barrierColor: Colors.black54,
-      builder: (context) => const DateTimePickerDialog(),
+      builder: (context) => DateTimePickerDialog(
+        initialStartDate: initialStartDate,
+        initialEndDate: initialEndDate,
+        isSelectingEndDate: isSelectingEndDate,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CalendarBloc()..add(const InitializeCalendar()),
+      create: (context) => CalendarBloc()
+        ..add(
+          InitializeCalendar(
+            initialStartDate: initialStartDate,
+            initialEndDate: initialEndDate,
+            isSelectingEndDate: isSelectingEndDate,
+          ),
+        ),
       child: const _DateTimePickerContent(),
     );
   }
@@ -54,7 +79,10 @@ class _DateTimePickerContent extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 40,
+          ),
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
@@ -80,8 +108,10 @@ class _DateTimePickerContent extends StatelessWidget {
                   TimeSelector(
                     startTime: state.startTime,
                     endTime: state.endTime,
-                    onStartTimePressed: () => _showTimePicker(context, true, state),
-                    onEndTimePressed: () => _showTimePicker(context, false, state),
+                    onStartTimePressed: () =>
+                        _showTimePicker(context, true, state),
+                    onEndTimePressed: () =>
+                        _showTimePicker(context, false, state),
                   ),
                   const SizedBox(height: 24),
                   // Month Navigation
@@ -111,7 +141,9 @@ class _DateTimePickerContent extends StatelessWidget {
                       context.read<CalendarBloc>().add(const CancelSelection());
                     },
                     onDone: () {
-                      context.read<CalendarBloc>().add(const ConfirmSelection());
+                      context.read<CalendarBloc>().add(
+                        const ConfirmSelection(),
+                      );
                     },
                   ),
                 ],
@@ -152,17 +184,21 @@ class _DateTimePickerContent extends StatelessWidget {
 
     if (picked != null && context.mounted) {
       if (isStartTime) {
-        context.read<CalendarBloc>().add(UpdateStartTime(
-              hour: picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod,
-              minute: picked.minute,
-              isAm: picked.period == DayPeriod.am,
-            ));
+        context.read<CalendarBloc>().add(
+          UpdateStartTime(
+            hour: picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod,
+            minute: picked.minute,
+            isAm: picked.period == DayPeriod.am,
+          ),
+        );
       } else {
-        context.read<CalendarBloc>().add(UpdateEndTime(
-              hour: picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod,
-              minute: picked.minute,
-              isAm: picked.period == DayPeriod.am,
-            ));
+        context.read<CalendarBloc>().add(
+          UpdateEndTime(
+            hour: picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod,
+            minute: picked.minute,
+            isAm: picked.period == DayPeriod.am,
+          ),
+        );
       }
     }
   }
