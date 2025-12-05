@@ -13,6 +13,8 @@ import '../features/reviews/presentation/pages/reviews_page.dart';
 import '../features/payment_methods/presentation/pages/payment_methods_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/profile/presentation/pages/favorites_page.dart';
+import '../features/splash/presentation/pages/splash_screen.dart';
+import '../features/search/presentation/pages/search_page.dart';
 
 /// Application routing configuration
 /// 
@@ -33,12 +35,22 @@ class AppRouter {
   static const String paymentStates = '/payment_states';
   static const String profile = '/profile';
   static const String favorites = '/favorites';
+  static const String splash = '/splash';
+  static const String search = '/search';
 
   static const String onboarding = '/onboarding';
 
   // Generate routes
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splash:
+        return MaterialPageRoute(
+          builder: (_) => const SplashScreen(),
+        );
+      case search:
+        return MaterialPageRoute(
+          builder: (_) => const SearchPage(),
+        );
       case home:
         return MaterialPageRoute(
           builder: (_) => const MainPage(),

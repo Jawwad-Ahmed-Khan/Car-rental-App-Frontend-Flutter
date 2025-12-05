@@ -18,8 +18,9 @@ class ProfileLocalDataSource {
     return User(
       id: userData['id'] ?? '',
       email: userData['email'] ?? '',
-      name: userData['name'] ?? '',
-      phoneNumber: userData['phoneNumber'],
+      firstName: userData['firstName'] ?? '',
+      lastName: userData['lastName'] ?? '',
+      phoneNumber: userData['phoneNumber'] ?? '',
       photoUrl: userData['photoUrl'],
     );
   }
@@ -30,7 +31,8 @@ class ProfileLocalDataSource {
     final userData = {
       'id': user.id,
       'email': user.email,
-      'name': user.name,
+      'firstName': user.firstName,
+      'lastName': user.lastName,
       'phoneNumber': user.phoneNumber,
       'photoUrl': user.photoUrl,
     };

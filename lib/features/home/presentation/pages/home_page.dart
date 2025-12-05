@@ -75,24 +75,20 @@ class _HomePageState extends State<HomePage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        showDialog(context: context, 
-                        builder: (BuildContext context){
-                          return AlertDialog(
-                            title: Text("Warning"),
-                            content: Text('This page is under development. Thank you for your patience.'),
-                            actions:<Widget> [
-                              TextButton(onPressed: (){
-                                Navigator.of(context).pop();
-                              }, child: Text('Close'))
-                            ],
-                          );
-                        });
+                        // Navigate to search page (index 1 in bottom navigation)
+                        // Find the MainPage's state and change the index
+                        final mainPageState = context.findAncestorStateOfType<State>();
+                        if (mainPageState != null && mainPageState.mounted) {
+                          // Use a callback to switch to search tab
+                          Navigator.of(context).pushNamed('/search', arguments: {'showAllCars': true});
+                        }
                       },
                       child: const Text(
                         'View All',
                         style: TextStyle(
-                          color: Color(0xFF7F7F7F),
+                          color: Color(0xFFFF6B35),
                           fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -143,26 +139,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        showDialog(context: context, 
-                        builder: (BuildContext context){
-                          return AlertDialog(
-                          title: Text('Warning'),
-                          content: Text('This page is under development. Sorry for inconvenience.'),
-                          actions: <Widget>[
-                            TextButton(onPressed: (){
-                              Navigator.of(context).pop();
-                            }, 
-                            child: Text('Cancel'))
-                          ],
-                        );
-                        });
-                        
+                        // Navigate to search page to view all nearby cars
+                        Navigator.of(context).pushNamed('/search');
                       },
                       child: const Text(
                         'View All',
                         style: TextStyle(
-                          color: Color(0xFF7F7F7F),
+                          color: Color(0xFFFF6B35),
                           fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),

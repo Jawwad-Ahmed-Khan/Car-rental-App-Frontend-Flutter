@@ -105,7 +105,7 @@ class _ProfilePageContent extends StatelessWidget {
             String? avatarUrl;
 
             if (state is ProfileLoaded && state.user != null) {
-              name = state.user!.name;
+              name = '${state.user!.firstName} ${state.user!.lastName}';
               email = state.user!.email;
               avatarUrl = state.user!.photoUrl;
             }
