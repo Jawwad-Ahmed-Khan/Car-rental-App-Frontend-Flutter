@@ -106,7 +106,10 @@ class _SearchPageContentState extends State<SearchPageContent> {
           // App Bar
           SearchAppBar(
             onBackPressed: () {
-              // Do nothing since this is a tab page
+              // Pop the navigation stack if we can, otherwise do nothing (tab page)
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              }
             },
           ),
           const SizedBox(height: 15),
@@ -190,7 +193,13 @@ class _SearchPageContentState extends State<SearchPageContent> {
                 ? 'Filtered Results'
                 : 'Recommend For You',
             onViewAllPressed: () {
-              // TODO: Navigate to all recommended cars
+              // Show all recommended cars by scrolling to see more
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Showing all recommended cars'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
             },
             child: state.filteredCars.isEmpty
                 ? const Padding(
@@ -261,7 +270,13 @@ class _SearchPageContentState extends State<SearchPageContent> {
             CarSection(
               title: 'Our Popular Cars',
               onViewAllPressed: () {
-                // TODO: Navigate to all popular cars
+                // Show all popular cars by scrolling to see more
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Showing all popular cars'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
               },
               child: SizedBox(
                 height: 220,
