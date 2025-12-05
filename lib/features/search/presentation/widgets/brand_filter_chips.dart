@@ -15,7 +15,7 @@ class BrandFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final brands = [
       {'name': 'ALL', 'icon': null, 'isAll': true},
-      {'name': 'Ferrari', 'icon': 'assets/icons/ferrari_logo.png', 'isAll': false},
+      {'name': 'Ferrari', 'icon': null, 'isAll': false}, // No logo file available
       {'name': 'Tesla', 'icon': 'assets/icons/tesla_logo.jpg', 'isAll': false},
       {'name': 'BMW', 'icon': 'assets/icons/bmw.svg', 'isAll': false},
       {'name': 'Lamborghini', 'icon': 'assets/icons/lamborghini.svg', 'isAll': false},

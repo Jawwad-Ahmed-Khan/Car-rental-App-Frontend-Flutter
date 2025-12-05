@@ -5,7 +5,8 @@ import '../../../shared/themes/app_colors.dart';
 import '../../../shared/widgets/app_logo.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../../shared/widgets/password_text_field.dart';
-import '../../../shared/widgets/social_login_button.dart';
+import '../../profile/data/datasources/profile_local_data_source.dart';
+import '../domain/entities/user.dart';
 import 'signup_page.dart';
 import 'reset_password_page.dart';
 
@@ -21,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _profileDataSource = ProfileLocalDataSource();
   bool _rememberMe = false;
 
   @override
@@ -184,7 +186,6 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 32),
 
-                // Social login buttons
                 // Social login buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
