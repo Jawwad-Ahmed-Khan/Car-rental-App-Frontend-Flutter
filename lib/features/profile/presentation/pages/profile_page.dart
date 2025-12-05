@@ -37,10 +37,9 @@ class _ProfilePageContent extends StatelessWidget {
       listener: (context, state) {
         if (state is ProfileLoggedOut) {
           // Navigate to login page and clear navigation stack
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/login',
-            (route) => false,
-          );
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/login', (route) => false);
         }
       },
       child: Scaffold(
@@ -100,12 +99,14 @@ class _ProfilePageContent extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
-            String name = 'Benjamin Jack';
+            String firstName = 'Benjamin';
+            String lastName = 'Jack';
             String email = 'benjaminJack@gmail.com';
             String? avatarUrl;
 
             if (state is ProfileLoaded && state.user != null) {
-              name = '${state.user!.firstName} ${state.user!.lastName}';
+              firstName = state.user!.firstName;
+              lastName = state.user!.lastName;
               email = state.user!.email;
               avatarUrl = state.user!.photoUrl;
             }
@@ -116,7 +117,7 @@ class _ProfilePageContent extends StatelessWidget {
                 children: [
                   // Profile Header
                   ProfileHeader(
-                    name: name,
+                    name: '$firstName $lastName',
                     email: email,
                     avatarUrl: avatarUrl,
                     onEditPressed: () {
@@ -244,9 +245,7 @@ class _ProfilePageContent extends StatelessWidget {
                 Navigator.of(dialogContext).pop();
                 context.read<ProfileBloc>().add(const LogoutRequested());
               },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-              ),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Logout'),
             ),
           ],
